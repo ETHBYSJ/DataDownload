@@ -9,6 +9,7 @@ import (
 func TestConfParse(t *testing.T) {
 	asserts := assert.New(t)
 	Init("../../conf/app.ini")
+	// database
 	err := mapSection("database", DatabaseConfig)
 	asserts.NoError(err)
 	asserts.Equal(DatabaseConfig.Type, "mysql")
@@ -18,4 +19,12 @@ func TestConfParse(t *testing.T) {
 	asserts.Equal(DatabaseConfig.Name, "file_manager")
 	asserts.Equal(DatabaseConfig.TablePrefix, "v1_")
 	asserts.Equal(DatabaseConfig.Port, 3306)
+
+	// system
+	err = mapSection("system", SystemConfig)
+	asserts.Equal(SystemConfig.Debug, true)
+
+
 }
+
+

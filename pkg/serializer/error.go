@@ -1,5 +1,9 @@
 package serializer
 
+import (
+	"go-file-manager/pkg/e"
+)
+
 // 错误处理
 type AppError struct {
 	Code		int
@@ -19,6 +23,19 @@ func (err AppError) Error() string {
 	return err.Msg
 }
 
+func DBErr(msg string, err error) Response {
+	if msg == "" {
+		msg = "数据库操作失败"
+	}
+	return Err(e.CodeDBError, msg, err)
+}
+
+func ParamErr(msg string, err error) Response {
+	if msg == "" {
+		msg = "参数错误"
+	}
+	return Err(e.CodeParamError, msg, err)
+}
 
 func Err(errCode int, msg string, err error) Response {
 	if appError, ok := err.(AppError); ok {

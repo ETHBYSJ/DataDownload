@@ -16,6 +16,13 @@ type database struct {
 	Port 		int
 }
 
+type system struct {
+	Debug 			bool
+	Listen			string `validate:"required"`
+	SessionSecret 	string
+	HashIDSalt		string
+}
+
 var cfg *ini.File
 
 func Init(path string) {
@@ -27,6 +34,7 @@ func Init(path string) {
 
 	sections := map[string]interface{}{
 		"database": DatabaseConfig,
+		"system":	SystemConfig,
 	}
 	for sectionName, sectionStruct := range sections {
 		err = mapSection(sectionName, sectionStruct)
