@@ -26,6 +26,7 @@ func InitRouter() *gin.Engine {
 			{
 				user.GET("me", controllers.UserMe)
 			}
+			// file := auth.Group("file")
 		}
 
 	}

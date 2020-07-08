@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.4.1 // indirect
+	github.com/casbin/casbin v1.9.1 // indirect
 	github.com/fatih/color v1.9.0
 	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.6.3
@@ -17,8 +18,10 @@ require (
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/speps/go-hashids v2.0.0+incompatible
+	github.com/spf13/afero v1.3.1 // indirect
 	github.com/stretchr/testify v1.6.1
 	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
+	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect

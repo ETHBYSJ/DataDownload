@@ -20,9 +20,7 @@ type User struct {
 	gorm.Model
 	Email 		string `gorm:"type:varchar(100);unique_index"`
 	Password	string `json:"-"`
-	Status 		int
-	// CreateTime 	timestamp.Timestamp
-	// UpdateTime  timestamp.Timestamp
+
 }
 
 func NewUser() User {
