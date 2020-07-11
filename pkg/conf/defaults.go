@@ -10,4 +10,5 @@ var SystemConfig = &system{
 	Listen: ":8080",
 	SessionSecret: "file-manager",
 	HashIDSalt: "file-manager",
+	StorageRoot: "D:\\storage",
 }

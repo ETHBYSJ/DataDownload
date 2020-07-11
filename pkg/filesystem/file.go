@@ -4,10 +4,11 @@ import "time"
 
 type FileInfo struct {
 	*Listing
-	Name string
-	Path string
-	Size int64
-	IsDir bool
-	ModTime time.Time
-
+	ID 		uint			`json:"id"`
+	Name 	string			`json:"name"`
+	Path 	string			`json:"path"`
+	Size 	int64			`json:"size"`
+	IsDir 	bool			`json:"isDir"`
+	ModTime time.Time		`json:"modified"`
+	Review  bool 			`json:"review"`
 }

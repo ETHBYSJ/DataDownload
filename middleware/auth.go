@@ -16,6 +16,9 @@ func CurrentUser() gin.HandlerFunc {
 			if err == nil {
 				c.Set("user", &user)
 			}
+		} else {
+			// 此处避免上一次的残留
+			c.Set("user", nil)
 		}
 		c.Next()
 	}

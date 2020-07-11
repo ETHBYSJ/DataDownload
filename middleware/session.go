@@ -14,6 +14,8 @@ var Store memstore.Store
 func Session(secret string) gin.HandlerFunc {
 	Store = memstore.NewStore([]byte(secret))
 	Store.Options(sessions.Options{HttpOnly: true, MaxAge: 7 * 86400, Path: "/"})
+	// 短过期时间测试
+	// Store.Options(sessions.Options{HttpOnly: true, MaxAge: 60, Path: "/"})
 	return sessions.Sessions("session", Store)
 }
 

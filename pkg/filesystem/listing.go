@@ -7,10 +7,10 @@ import (
 )
 
 type Listing struct {
-	Items []*FileInfo
-	NumDirs int
-	NumFiles int
-	Sorting Sorting
+	Items []*FileInfo		`json:"items"`
+	NumDirs int				`json:"numDirs"`
+	NumFiles int			`json:"numFiles"`
+	Sorting Sorting			`json:"sorting"`
 }
 
 

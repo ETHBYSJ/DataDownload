@@ -1,6 +1,7 @@
 package filesystem
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -10,6 +11,11 @@ func TestDicOrder(t *testing.T) {
 	s1 := "a00b00"
 	s2 := "a0b00"
 	asserts.True(s1 < s2)
+}
+
+func TestInit(t *testing.T) {
+	l := Listing{}
+	fmt.Print(l)
 }
 /*
 func TestWin10Sort(t *testing.T) {

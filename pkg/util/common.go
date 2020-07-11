@@ -1,7 +1,9 @@
 package util
 
 import (
+	"io/ioutil"
 	"math/rand"
+	"os"
 	"time"
 )
 
@@ -16,4 +18,13 @@ func RandStringRunes(n int) string {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
 	}
 	return string(b)
+}
+
+func ReadAll(path string) ([]byte, error) {
+	file, err := os.Open(path)
+	defer file.Close()
+	if err != nil {
+		return nil, err
+	}
+	return ioutil.ReadAll(file)
 }

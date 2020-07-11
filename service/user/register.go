@@ -3,7 +3,9 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 	"go-file-manager/models"
+	"go-file-manager/pkg/e"
 	"go-file-manager/pkg/serializer"
+	"go-file-manager/pkg/util"
 )
 
 type UserRegisterService struct {
@@ -15,10 +17,14 @@ func (service *UserRegisterService) Register(c *gin.Context) serializer.Response
 	user := models.NewUser()
 	user.Email = service.UserName
 	user.SetPassword(service.Password)
-	user.Status = models.Active
+	user.Status = true
 	// 创建用户
 	if err := models.DB.Create(&user).Error; err != nil {
-		return serializer.DBErr("邮箱已被使用", err)
+		return serializer.DBErr("邮箱已被使用", e.ErrRegister)
 	}
-	return serializer.Response{}
+	util.Log().Info("新用户id: %v", user.ID)
+	util.SetSession(c, map[string]interface{}{
+		"user_id": user.ID,
+	})
+	return serializer.Response{Msg: "注册成功"}
 }

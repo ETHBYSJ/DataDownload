@@ -23,10 +23,11 @@ func Init() {
 		conf.DatabaseConfig.Host,
 		conf.DatabaseConfig.Port,
 		conf.DatabaseConfig.Name))
+	/*
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
 		return conf.DatabaseConfig.TablePrefix + defaultTableName
 	}
-
+	*/
 	if conf.SystemConfig.Debug {
 		db.LogMode(true)
 	} else {
@@ -42,5 +43,8 @@ func Init() {
 	db.DB().SetConnMaxLifetime(time.Second * 30)
 
 	DB = db
+
+	// 执行迁移
+	migration()
 
 }

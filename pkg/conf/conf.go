@@ -21,6 +21,7 @@ type system struct {
 	Listen			string `validate:"required"`
 	SessionSecret 	string
 	HashIDSalt		string
+	StorageRoot		string
 }
 
 var cfg *ini.File

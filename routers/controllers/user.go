@@ -27,12 +27,30 @@ func UserRegister(c *gin.Context) {
 	}
 }
 
+// 用户注销
+func UserLogout(c *gin.Context) {
+	var service user.UserLogoutService
+	res := service.Logout(c)
+	c.JSON(200, res)
+}
+
 // 当前登录用户
 func UserMe(c *gin.Context) {
-	currentUser := CurrentUser(c)
+	currentUser := user.CurrentUser(c)
 	res := serializer.BuildUserResponse(*currentUser)
 	c.JSON(200, res)
 }
 
+// 设置用户偏好语言
+
+func LanguageSet(c *gin.Context) {
+	var service user.UserLanguageService
+	if err := c.ShouldBindQuery(&service); err == nil {
+		res := service.LanguageSet(c)
+		c.JSON(200, res)
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
 
 

@@ -5,15 +5,12 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"sync"
 	"time"
 )
 
 type BasePathFs struct {
 	source Fs
 	path string
-	// 文件系统互斥锁
-	Lock sync.Mutex
 }
 
 type BasePathFile struct {
@@ -22,8 +19,8 @@ type BasePathFile struct {
 }
 
 func (f *BasePathFile) Name() string {
-	sourcename := f.File.Name()
-	return strings.TrimPrefix(sourcename, filepath.Clean(f.path))
+	sourceName := f.File.Name()
+	return strings.TrimPrefix(sourceName, filepath.Clean(f.path))
 }
 
 func NewBasePathFs(source Fs, path string) Fs {
@@ -78,14 +75,14 @@ func (b *BasePathFs) Stat(name string) (fs os.FileInfo, err error) {
 	return b.source.Stat(name)
 }
 
-func (b *BasePathFs) Rename(oldname, newname string) (err error) {
-	if oldname, err = b.RealPath(oldname); err != nil {
-		return &os.PathError{Op: "rename", Path: oldname, Err: err}
+func (b *BasePathFs) Rename(oldName, newName string) (err error) {
+	if oldName, err = b.RealPath(oldName); err != nil {
+		return &os.PathError{Op: "rename", Path: oldName, Err: err}
 	}
-	if newname, err = b.RealPath(newname); err != nil {
-		return &os.PathError{Op: "rename", Path: newname, Err: err}
+	if newName, err = b.RealPath(newName); err != nil {
+		return &os.PathError{Op: "rename", Path: newName, Err: err}
 	}
-	return b.source.Rename(oldname, newname)
+	return b.source.Rename(oldName, newName)
 }
 
 func (b *BasePathFs) RemoveAll(name string) (err error) {

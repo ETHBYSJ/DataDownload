@@ -9,7 +9,7 @@ import (
 type User struct {
 	ID 			string `json:"id"`
 	Email 		string `json:"userName"`
-	Status 		int `json:"status"`
+	Status 		bool `json:"status"`
 	CreatedAt 	int64 `json:"createdAt"`
 	UpdatedAt 	int64 `json:"updatedAt"`
 }

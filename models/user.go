@@ -5,26 +5,38 @@ import (
 	"encoding/hex"
 	"errors"
 	"github.com/jinzhu/gorm"
+	"go-file-manager/pkg/e"
 	"go-file-manager/pkg/util"
 	"strings"
 )
 
-const (
-	// 账户状态
-	Active = iota
-	// 被封禁
-	Banned
-)
 
 type User struct {
 	gorm.Model
-	Email 		string `gorm:"type:varchar(100);unique_index"`
-	Password	string `json:"-"`
-
+	Email 		string 	`gorm:"type:varchar(100);unique_index"`
+	Password	string 	`json:"-"`
+	Status 		bool 	`gorm:"type:tinyint(1) not null;default:0"`
+	UserType	string 	`gorm:"type:varchar(8) not null;default:'User'"`
+	Language 	string 	`gorm:"type:varchar(8) not null;default:'zh-CN'"`
 }
 
 func NewUser() User {
 	return User{}
+}
+
+func checkLanguage(language string) bool {
+	if language == "zh-CN" || language == "en-US" {
+		return true
+	}
+	return false
+}
+
+func LanguageSet(user *User, language string) error {
+	if !checkLanguage(language) {
+		return e.ErrLanguageInvalid
+	}
+	result := DB.Model(&user).Update("language", language)
+	return result.Error
 }
 
 func GetUserByID(ID interface{}) (User, error) {
@@ -35,13 +47,13 @@ func GetUserByID(ID interface{}) (User, error) {
 
 func GetActiveUserByID(ID interface{}) (User, error) {
 	var user User
-	result := DB.Set("gorm:auto_preload", true).Where("status = ?", Active).First(&user, ID)
+	result := DB.Set("gorm:auto_preload", true).Where("status = ?", 1).First(&user, ID)
 	return user, result.Error
 }
 
 func GetUserByEmail(email string) (User, error) {
 	var user User
-	result := DB.Set("gorm:auto_preload", true).Where("status = ? and email = ?", Active, email).First(&user)
+	result := DB.Set("gorm:auto_preload", true).Where("status = ? and email = ?", 1, email).First(&user)
 	return user, result.Error
 }
 
