@@ -32,3 +32,4 @@ func TestOsFs_Rename(t *testing.T) {
 	e := osFs.Rename("D:\\storage\\a0\\test1.txt", "D:\\storage\\a0\\test.txt")
 	asserts.NoError(e)
 }
+

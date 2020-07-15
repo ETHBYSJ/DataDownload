@@ -23,6 +23,42 @@ func FileUploadStream(c *gin.Context) {
 }
 */
 
+// 合并分块
+func MergeChunk(c *gin.Context) {
+	var service file.MergeService
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.MergeChunk(c)
+		c.JSON(200, res)
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
+// 检查分块
+func CheckChunk(c *gin.Context) {
+	var service file.ChunkService
+	if err := c.BindQuery(&service); err == nil {
+		res := service.CheckChunk(c)
+		c.JSON(200, res)
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
+// 上传分块
+func UploadChunk(c *gin.Context) {
+	var service file.ChunkService
+
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.UploadChunk(c)
+		c.JSON(200, res)
+
+	} else {
+		// util.Log().Info("bind error, err = %s", err)
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
 // 创建新目录
 func CreateDirectory(c *gin.Context) {
 	var service file.CreateDirectoryService

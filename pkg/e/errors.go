@@ -14,6 +14,17 @@ var (
 	ErrClientCancelled = errors.New("客户端取消操作")
 	ErrGetContext = errors.New("获取上下文错误")
 	ErrType = errors.New("类型错误")
+	ErrFileCover = errors.New("已存在同名文件")
+	ErrCreateFileRecord = errors.New("创建文件记录失败")
+	ErrGetUploadChunk = errors.New("获取上传文件分块失败")
+	ErrUploadPathNotExists = errors.New("上传路径不存在")
+	ErrGetUploadRecord = errors.New("获取文件记录失败")
+	ErrCheckChunks = errors.New("统计文件分块出错")
+	ErrAlreadyMerged = errors.New("文件分块已经合并")
+	ErrMergeFile = errors.New("合并文件出错")
+	ErrMergeFileMD5 = errors.New("MD5与预期不一致")
+	ErrLock = errors.New("获取锁失败")
+	ErrUnlock = errors.New("解锁失败")
 )
 // 用户相关
 var (

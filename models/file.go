@@ -7,15 +7,24 @@ import (
 
 type File struct {
 	gorm.Model
-	Name	string 	`gorm:"type:varchar(255) not null;unique_index:idx"`
-	IsDir 	bool 	`gorm:"type:tinyint(1) not null;default:0"`
-	Path 	string 	`gorm:"type:varchar(255);unique_index:idx"`
-	OwnerID	uint
-	Owner 	User	`gorm:"foreignkey:OwnerID"`
-	Privacy	bool 	`gorm:"type:tinyint(1) not null;default:0"`
-	Size 	int64
-	Review  bool 	`gorm:"type:tinyint(1) not null;default:0"`
+	Name		string 	`gorm:"type:varchar(255) not null;unique_index:idx"`
+	IsDir 		bool 	`gorm:"type:tinyint(1) not null;default:0"`
+	Path 		string 	`gorm:"type:varchar(255);unique_index:idx"`
+	OwnerID		uint
+	Owner 		User	`gorm:"foreignkey:OwnerID"`
+	Privacy		bool 	`gorm:"type:tinyint(1) not null;default:0"`
+	Size 		int64
+	// 是否通过审核
+	Review  	bool 	`gorm:"type:tinyint(1) not null;default:0"`
+	MD5 		string 	`gorm:"type:varchar(255);"`
+	Uploaded 	bool 	`gorm:"type:tinyint(1) not null;default:0"`
+	Merge 		bool 	`gorm:"type:tinyint(1) not null;default:0"`
 }
+
+func NewFile() File {
+	return File{}
+}
+
 // 根据文件名和路径名获取文件
 func GetFileByNameAndPath(name string, path string) (File, error) {
 	var file File
@@ -52,6 +61,16 @@ func (file *File) Rename(newName string) error {
 // 更新文件名
 func (file *File) UpdateSourceName(value string) error {
 	return DB.Model(&file).Update("name", value).Error
+}
+
+// 更新是否已上传字段
+func (file *File) UpdateUploaded(uploaded bool) error {
+	return DB.Model(&file).Update("uploaded", uploaded).Error
+}
+
+// 更新是否已合并字段
+func (file *File) UpdateMerge(merge bool) error {
+	return DB.Model(&file).Update("merge", merge).Error
 }
 
 func (file *File) GetName() string {

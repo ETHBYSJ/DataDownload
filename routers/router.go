@@ -7,12 +7,15 @@ import (
 	"go-file-manager/routers/controllers"
 )
 
+
+
 func InitRouter() *gin.Engine {
 	r := gin.Default()
 	r.MaxMultipartMemory = 1024 << 20
 	v1 := r.Group("/api/v1")
 	v1.Use(middleware.Session(conf.SystemConfig.SessionSecret))
 	v1.Use(middleware.CurrentUser())
+	// v1.Use(middleware.Cors())
 	{
 		user := v1.Group("user")
 		{
@@ -36,8 +39,10 @@ func InitRouter() *gin.Engine {
 				file.GET("test", controllers.TestController)
 				file.GET("list", controllers.ListDirectory)
 				file.PUT("create", controllers.CreateDirectory)
-				// file.POST("upload", controllers.FileUploadStream)
-
+				// 分块上传相关
+				file.GET("chunk", controllers.CheckChunk)
+				file.POST("chunk", controllers.UploadChunk)
+				file.GET("merge", controllers.MergeChunk)
 			}
 		}
 
