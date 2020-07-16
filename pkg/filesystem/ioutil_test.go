@@ -21,3 +21,12 @@ func TestSubstr(t *testing.T) {
 	asserts.True(true)
 }
 
+func TestIndex(t *testing.T) {
+	asserts := assert.New(t)
+	s := "LastIndex返回字符串str在字符串s中最后出现位置的索引"
+	index := strings.Index(s, "字符串")
+	asserts.True(index != -1)
+	index = strings.Index(s, "Index")
+	asserts.True(index != -1)
+}
+

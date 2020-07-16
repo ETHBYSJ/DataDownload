@@ -19,6 +19,8 @@ const (
 	CodeErrGetUploadChunk = 30003
 	CodeUploadChunk = 30004
 	CodeErrMerge = 30005
+	CodeErrRename = 30006
+	CodeErrDelete = 30007
 
 	// 未定错误
 	CodeNotSet = -1

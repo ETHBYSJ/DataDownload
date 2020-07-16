@@ -48,10 +48,18 @@ func (file *File) Create() (uint, error) {
 	return file.ID, nil
 }
 
+// 通过ID删除文件
 func DeleteFileByID(id uint) error {
 	result := DB.Unscoped().Where("id = ?", id).Delete(&File{})
 	return result.Error
 }
+
+// 通过文件名和路径删除文件
+func DeleteFileByNameAndPath(name string, path string) error {
+	result := DB.Unscoped().Where("name = ? AND path = ?", name, path).Delete(&File{})
+	return result.Error
+}
+
 
 // 重命名文件
 func (file *File) Rename(newName string) error {
@@ -66,6 +74,10 @@ func (file *File) UpdateSourceName(value string) error {
 // 更新是否已上传字段
 func (file *File) UpdateUploaded(uploaded bool) error {
 	return DB.Model(&file).Update("uploaded", uploaded).Error
+}
+
+func (file *File) UpdateRename(oldName, newName, path string) error {
+	return DB.Model(&file).Update("name", newName).Error
 }
 
 // 更新是否已合并字段

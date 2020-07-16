@@ -12,15 +12,33 @@ type FileService struct {
 	Path string `json:"path" binding:"required,min=1,max=65535"`
 }
 
+type ListByKeywordService struct {
+	By 	 	string 	`form:"by" json:"by"`
+	Asc  	bool 	`form:"asc" json:"asc"`
+	Path 	string 	`form:"path" json:"path"`
+	Keyword string 	`form:"keyword" json:"keyword"`
+}
+
 type ListDirectoryService struct {
 	By 	 string `form:"by" json:"by"`
 	Asc  bool 	`form:"asc" json:"asc"`
 	Path string `form:"path" json:"path"`
 }
 
+type DeleteService struct {
+	Path string `form:"path" json:"path"`
+	Name string `form:"name" json:"name"`
+}
+
 type CreateDirectoryService struct {
 	Path string `form:"path" json:"path"`
 	Name string `form:"name" json:"name"`
+}
+
+type RenameService struct {
+	Path string `form:"path" json:"path"`
+	OldName string `form:"oldName" json:"oldName"`
+	NewName string `form:"newName" json:"newName"`
 }
 
 type ChunkService struct {
@@ -39,6 +57,28 @@ type MergeService struct {
 	RelativePath 	string 	`form:"relativePath"`
 	Identifier 		string 	`form:"identifier"`
 	TotalChunks 	int 	`form:"totalChunks"`
+}
+
+// 删除文件
+func (service *DeleteService) Delete(c *gin.Context) serializer.Response {
+	err := filesystem.GlobalFs.Delete(service.Name, service.Path)
+	if err != nil {
+		return serializer.Err(e.CodeErrDelete, err.Error(), err)
+	}
+	return serializer.Response{
+		Code: 0,
+	}
+}
+
+// 文件重命名
+func (service *RenameService) Rename(c *gin.Context) serializer.Response {
+	err := filesystem.GlobalFs.RenameAtomic(service.OldName, service.NewName, service.Path)
+	if err != nil {
+		return serializer.Err(e.CodeErrRename, err.Error(), err)
+	}
+	return serializer.Response{
+		Code: 0,
+	}
 }
 
 // 合并分块
@@ -93,6 +133,18 @@ func (service *ChunkService) UploadChunk(c *gin.Context) serializer.Response {
 	return serializer.Response{
 		Code: 0,
 		Data: checkInfo,
+	}
+}
+
+// 根据关键字查询
+func (service *ListByKeywordService) ListByKeyword(c *gin.Context) serializer.Response {
+	list, err := filesystem.GlobalFs.ListByKeyword(filesystem.Sorting{By: service.By, Asc: service.Asc}, service.Path, service.Keyword)
+	if err != nil {
+		return serializer.Err(e.CodeNotSet, err.Error(), err)
+	}
+	return serializer.Response{
+		Code: 0,
+		Data: list,
 	}
 }
 

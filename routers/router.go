@@ -39,6 +39,9 @@ func InitRouter() *gin.Engine {
 				file.GET("test", controllers.TestController)
 				file.GET("list", controllers.ListDirectory)
 				file.PUT("create", controllers.CreateDirectory)
+				file.GET("rename", controllers.Rename)
+				file.GET("delete", controllers.Delete)
+				file.GET("list_by_keyword", controllers.ListByKeyword)
 				// 分块上传相关
 				file.GET("chunk", controllers.CheckChunk)
 				file.POST("chunk", controllers.UploadChunk)

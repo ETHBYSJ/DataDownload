@@ -73,11 +73,14 @@ type FileSystem struct {
 	Hooks map[string][]Hook
 }
 
+
+
 // 获取锁，立即返回
 func (fs *FileSystem) Lock(key string) error {
 	cacheItem, err := fs.locker.Value(key)
 	if err != nil {
 		util.Log().Error("获取锁错误 %s", err)
+		return err
 	}
 	if cacheItem != nil && cacheItem.Data() != nil {
 		return e.ErrLock
@@ -364,32 +367,54 @@ func (fs *FileSystem) Rename(oldName, newName, dirPath string) error {
 	if !fs.validateLegalName(newName) || !fs.ValidateExtension(newName) {
 		return e.ErrIllegalName
 	}
-	// 先查数据库中是否有同名文件
-	_, err := models.GetFileByNameAndPath(newName, dirPath)
+	file, err := models.GetFileByNameAndPath(oldName, dirPath)
 	if err != nil {
+		return e.ErrFileNotExist
+	}
+	// 先查数据库中是否有同名文件
+	_, err = models.GetFileByNameAndPath(newName, dirPath)
+	if err == nil {
 		return e.ErrFileExisted
 	}
 	// 需要先将目录与文件路径合并
 	err = fs.Fs.Rename(filepath.Join(dirPath, oldName), filepath.Join(dirPath, newName))
+	if err != nil {
+		return err
+	}
+	// 修改数据库中的记录
+	err = file.UpdateRename(oldName, newName, dirPath)
 	return err
 }
 
-// func (fs *FileSystem) Delete()
+// 带有保护的重命名操作
+func (fs *FileSystem) RenameAtomic(oldName, newName, dirPath string) error {
+	fullPath := filepath.Join(dirPath, newName)
+	err := fs.Lock(fullPath)
+	defer fs.Unlock(fullPath)
+	if err != nil {
+		return err
+	}
+	return fs.Rename(oldName, newName, dirPath)
+
+}
+
+
+
+// 删除文件
+func (fs *FileSystem) Delete(name string, path string) error {
+	err := fs.Fs.Remove(filepath.Join(path, name))
+	if err != nil {
+		return e.ErrDelete
+	}
+	err = models.DeleteFileByNameAndPath(name, path)
+	if err != nil {
+		return e.ErrDelete
+	}
+	return nil
+}
 
 // 创建文件夹
 func (fs *FileSystem) CreateDirectory(user *models.User, name, dirPath string) (*FileInfo, error) {
-	/*
-	ginCtx, ok := ctx.Value(GinCtx).(*gin.Context)
-	if !ok {
-		return nil, ErrGetContext
-	}
-
-	userStore, ok := ginCtx.Get("user")
-	if !ok {
-		return nil, ErrGetUser
-	}
-	user, _ := userStore.(*models.User)
-	*/
 	// 检查目录名是否合法
 	if !fs.validateLegalName(name) {
 		return nil, e.ErrIllegalName
@@ -422,6 +447,48 @@ func (fs *FileSystem) CreateDirectory(user *models.User, name, dirPath string) (
 		Review: true,
 	}
 	return &file, nil
+}
+
+// 根据关键字查询
+func (fs *FileSystem) ListByKeyword(sorting Sorting, dirPath string, keyword string) (*Listing, error) {
+	dir, err := ReadDir(fs.Fs, dirPath)
+	if err != nil {
+		return nil, err
+	}
+	listing := &Listing{
+		Items: []*FileInfo{},
+		NumDirs: 0,
+		NumFiles: 0,
+		Sorting: sorting,
+	}
+	for _, f := range dir {
+		name := f.Name()
+		if strings.Index(name, keyword) == -1 {
+			continue
+		}
+		file := &FileInfo{
+			Name: name,
+			Path: dirPath,
+			Size: f.Size(),
+			IsDir: f.IsDir(),
+			ModTime: f.ModTime(),
+		}
+		// 查数据库获取唯一ID
+		fileModel, err := models.GetFileByNameAndPath(name, dirPath)
+		if err != nil {
+			continue
+		}
+
+		file.ID = fileModel.ID
+		if file.IsDir {
+			listing.NumDirs++
+		} else {
+			listing.NumFiles++
+		}
+		listing.Items = append(listing.Items, file)
+	}
+	listing.ApplySort()
+	return listing, nil
 }
 
 // 列出路径下的内容

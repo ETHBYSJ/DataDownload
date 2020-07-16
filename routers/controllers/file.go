@@ -6,22 +6,16 @@ import (
 )
 
 
-// 文件上传
-/*
-func FileUploadStream(c *gin.Context) {
-	// 创建上下文
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	// 取得文件大小
-	fileSize, err := strconv.ParseUint(c.Request.Header.Get("Content-Length"), 10, 64)
-	if err != nil {
+// 重命名
+func Rename(c *gin.Context) {
+	var service file.RenameService
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.Rename(c)
+		c.JSON(200, res)
+	} else {
 		c.JSON(200, ErrorResponse(err))
-		return
 	}
-	// 解析信息
-
 }
-*/
 
 // 合并分块
 func MergeChunk(c *gin.Context) {
@@ -48,7 +42,6 @@ func CheckChunk(c *gin.Context) {
 // 上传分块
 func UploadChunk(c *gin.Context) {
 	var service file.ChunkService
-
 	if err := c.ShouldBind(&service); err == nil {
 		res := service.UploadChunk(c)
 		c.JSON(200, res)
@@ -59,11 +52,35 @@ func UploadChunk(c *gin.Context) {
 	}
 }
 
+
+
+// 删除文件
+func Delete(c *gin.Context) {
+	var service file.DeleteService
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.Delete(c)
+		c.JSON(200, res)
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
 // 创建新目录
 func CreateDirectory(c *gin.Context) {
 	var service file.CreateDirectoryService
 	if err := c.BindQuery(&service); err == nil {
 		res := service.CreateDirectory(c)
+		c.JSON(200, res)
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
+// 根据关键字查询
+func ListByKeyword(c *gin.Context) {
+	var service file.ListByKeywordService
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.ListByKeyword(c)
 		c.JSON(200, res)
 	} else {
 		c.JSON(200, ErrorResponse(err))

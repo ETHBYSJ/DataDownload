@@ -25,6 +25,7 @@ var (
 	ErrMergeFileMD5 = errors.New("MD5与预期不一致")
 	ErrLock = errors.New("获取锁失败")
 	ErrUnlock = errors.New("解锁失败")
+	ErrDelete = errors.New("删除失败")
 )
 // 用户相关
 var (
