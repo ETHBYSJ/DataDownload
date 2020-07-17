@@ -24,6 +24,7 @@ func addDefaultUser() {
 		defaultUser := NewUser()
 		defaultUser.Email = "2296176046@qq.com"
 		defaultUser.Status = true
+		defaultUser.UserType = "Admin"
 		err := defaultUser.SetPassword("123456")
 		if err != nil {
 			util.Log().Panic("设置管理员密码失败, %s", err)

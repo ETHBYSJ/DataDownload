@@ -3,6 +3,7 @@ package filesystem
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -28,5 +29,14 @@ func TestIndex(t *testing.T) {
 	asserts.True(index != -1)
 	index = strings.Index(s, "Index")
 	asserts.True(index != -1)
+}
+
+func TestFilePath(t *testing.T) {
+	asserts := assert.New(t)
+	path := "\\test\\"
+	name := "/a.txt"
+	// fmt.Println(strings.ReplaceAll(filepath.Join(path, name), "\\", "/"))
+	newPath := strings.ReplaceAll(filepath.Join(path, name), "\\", "/")
+	asserts.True(newPath == "/test/a.txt")
 }
 

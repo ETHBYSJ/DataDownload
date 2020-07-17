@@ -19,7 +19,7 @@ func (service *UserRegisterService) Register(c *gin.Context) serializer.Response
 	user.SetPassword(service.Password)
 	user.Status = true
 	// 创建用户
-	if err := models.DB.Create(&user).Error; err != nil {
+	if err := models.DB.Create(user).Error; err != nil {
 		return serializer.DBErr("邮箱已被使用", e.ErrRegister)
 	}
 	util.Log().Info("新用户id: %v", user.ID)

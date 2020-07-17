@@ -1,6 +1,8 @@
 package serializer
 
-import "go-file-manager/pkg/e"
+import (
+	"go-file-manager/pkg/e"
+)
 
 func PermissionDenied() Response {
 	return Response {

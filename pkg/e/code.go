@@ -21,6 +21,7 @@ const (
 	CodeErrMerge = 30005
 	CodeErrRename = 30006
 	CodeErrDelete = 30007
+	CodeErrSetShare = 30008
 
 	// 未定错误
 	CodeNotSet = -1

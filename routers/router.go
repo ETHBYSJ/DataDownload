@@ -42,6 +42,7 @@ func InitRouter() *gin.Engine {
 				file.GET("rename", controllers.Rename)
 				file.GET("delete", controllers.Delete)
 				file.GET("list_by_keyword", controllers.ListByKeyword)
+				file.GET("set_share", controllers.SetShare)
 				// 分块上传相关
 				file.GET("chunk", controllers.CheckChunk)
 				file.POST("chunk", controllers.UploadChunk)

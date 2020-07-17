@@ -5,6 +5,17 @@ import (
 	"go-file-manager/service/file"
 )
 
+// 设置分享
+func SetShare(c *gin.Context) {
+	var service file.ShareService
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.SetShare(c)
+		c.JSON(200, res)
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
 
 // 重命名
 func Rename(c *gin.Context) {

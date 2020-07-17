@@ -73,7 +73,18 @@ type FileSystem struct {
 	Hooks map[string][]Hook
 }
 
-
+// 设置文件分享状态
+func (fs *FileSystem) SetShare(name string, path string, share bool) error {
+	fm, err := models.GetFileByNameAndPath(name, path)
+	if err != nil {
+		return e.ErrUploadPathNotExists
+	}
+	err = fm.UpdateShare(share)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 // 获取锁，立即返回
 func (fs *FileSystem) Lock(key string) error {
@@ -198,6 +209,16 @@ func (fs *FileSystem) MergeChunk(name string, path string, user *models.User, md
 				// 校验成功，更新数据库相应字段
 				fm.UpdateMerge(true)
 				// TODO 合并成功后删除临时文件
+				for i := 1; i <= totalChunks; i++ {
+					currentPath := path
+					if path == "/" {
+						currentPath += md5 + "_" + name + "_" + strconv.Itoa(i)
+					} else {
+						// path: /test
+						currentPath += "/" + md5 + "_" + name + "_" + strconv.Itoa(i)
+					}
+					fs.Fs.Remove(currentPath)
+				}
 				return &CheckInfo{SkipUpload: true, Uploaded: []int{}, NeedMerge: false, Identifier: md5, FileName: name, RelativePath: path, TotalChunks: totalChunks}, nil
 			}
 		}
@@ -427,6 +448,7 @@ func (fs *FileSystem) CreateDirectory(user *models.User, name, dirPath string) (
 		Owner: *user,
 		OwnerID: user.ID,
 		Review: true,	// 文件夹默认是审核通过的
+		Share: true,  // 默认公开
 	}
 	id, err := newFolder.Create()
 	if err != nil {
@@ -436,7 +458,7 @@ func (fs *FileSystem) CreateDirectory(user *models.User, name, dirPath string) (
 	if err != nil {
 		// 删除数据库插入的记录
 		_ = models.DeleteFileByID(id)
-		return nil, e.ErrFolderExisted
+		return nil, err
 	}
 	file := FileInfo{
 		ID: id,
@@ -445,6 +467,8 @@ func (fs *FileSystem) CreateDirectory(user *models.User, name, dirPath string) (
 		IsDir: true,
 		ModTime: newFolder.CreatedAt,
 		Review: true,
+		OwnerID: user.ID,
+		Share: true,
 	}
 	return &file, nil
 }
@@ -478,8 +502,12 @@ func (fs *FileSystem) ListByKeyword(sorting Sorting, dirPath string, keyword str
 		if err != nil {
 			continue
 		}
-
+		if !fileModel.Merge {
+			continue
+		}
 		file.ID = fileModel.ID
+		file.OwnerID = fileModel.OwnerID
+		file.Share = fileModel.Share
 		if file.IsDir {
 			listing.NumDirs++
 		} else {
@@ -517,8 +545,12 @@ func (fs *FileSystem) List(sorting Sorting, dirPath string) (*Listing, error) {
 		if err != nil {
 			continue
 		}
-
+		if !fileModel.IsDir && !fileModel.Merge {
+			continue
+		}
 		file.ID = fileModel.ID
+		file.OwnerID = fileModel.OwnerID
+		file.Share = fileModel.Share
 		if file.IsDir {
 			listing.NumDirs++
 		} else {

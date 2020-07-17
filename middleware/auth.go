@@ -14,7 +14,8 @@ func CurrentUser() gin.HandlerFunc {
 		if uid != nil {
 			user, err := models.GetActiveUserByID(uid)
 			if err == nil {
-				c.Set("user", &user)
+				// util.Log().Info("user ID = %v", user.ID)
+				c.Set("user", user)
 			}
 		} else {
 			// 此处避免上一次的残留

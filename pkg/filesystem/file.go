@@ -11,4 +11,6 @@ type FileInfo struct {
 	IsDir 	bool			`json:"isDir"`
 	ModTime time.Time		`json:"modified"`
 	Review  bool 			`json:"review"`
+	OwnerID uint 			`json:"ownerId"`
+	Share 	bool 			`json:"share"`
 }

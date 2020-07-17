@@ -4,6 +4,13 @@ import (
 	"go-file-manager/pkg/e"
 )
 
+func NotFound() Response {
+	return Response {
+		Code: e.CodeNotFound,
+		Msg: "资源不存在",
+	}
+}
+
 // 错误处理
 type AppError struct {
 	Code		int

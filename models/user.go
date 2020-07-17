@@ -20,8 +20,8 @@ type User struct {
 	Language 	string 	`gorm:"type:varchar(8) not null;default:'zh-CN'"`
 }
 
-func NewUser() User {
-	return User{}
+func NewUser() *User {
+	return &User{}
 }
 
 func checkLanguage(language string) bool {
@@ -39,27 +39,27 @@ func LanguageSet(user *User, language string) error {
 	return result.Error
 }
 
-func GetUserByID(ID interface{}) (User, error) {
+func GetUserByID(ID interface{}) (*User, error) {
 	var user User
 	result := DB.Set("gorm:auto_preload", true).First(&user, ID)
-	return user, result.Error
+	return &user, result.Error
 }
 
-func GetActiveUserByID(ID interface{}) (User, error) {
+func GetActiveUserByID(ID interface{}) (*User, error) {
 	var user User
 	result := DB.Set("gorm:auto_preload", true).Where("status = ?", 1).First(&user, ID)
-	return user, result.Error
+	return &user, result.Error
 }
 
-func GetUserByEmail(email string) (User, error) {
+func GetUserByEmail(email string) (*User, error) {
 	var user User
 	result := DB.Set("gorm:auto_preload", true).Where("status = ? and email = ?", 1, email).First(&user)
-	return user, result.Error
+	return &user, result.Error
 }
 
 // 设定用户状态
-func (user *User) SetStatus(status int) {
-	DB.Model(&user).Update("status", status)
+func (user *User) SetStatus(status int) error {
+	return DB.Model(&user).Update("status", status).Error
 }
 
 // 根据密码明文设定User的Password字段

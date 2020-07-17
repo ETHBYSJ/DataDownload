@@ -26,6 +26,7 @@ var (
 	ErrLock = errors.New("获取锁失败")
 	ErrUnlock = errors.New("解锁失败")
 	ErrDelete = errors.New("删除失败")
+	ErrTryToGetRoot = errors.New("试图获取根目录在数据库中的记录")
 )
 // 用户相关
 var (

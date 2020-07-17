@@ -8,6 +8,7 @@ import (
 	"go-file-manager/pkg/util"
 )
 
+
 func CurrentUser(c *gin.Context) *models.User {
 	if user, _ := c.Get("user"); user != nil {
 		if u, ok := user.(*models.User); ok {
