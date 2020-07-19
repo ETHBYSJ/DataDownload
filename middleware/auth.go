@@ -38,3 +38,24 @@ func AuthRequired() gin.HandlerFunc {
 	}
 }
 
+func AdminRequired() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if user, _ := c.Get("user"); user != nil {
+			if user, ok := user.(*models.User); ok {
+				if user.UserType == "Admin" {
+					c.Next()
+					return
+				} else {
+					// 登录用户不是Admin类型返回403
+					c.JSON(200, serializer.PermissionDenied())
+					c.Abort()
+					return
+				}
+			}
+		}
+		// 未登录返回401
+		c.JSON(200, serializer.CheckLogin())
+		c.Abort()
+	}
+}
+

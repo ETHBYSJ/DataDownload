@@ -6,11 +6,17 @@ import (
 )
 
 type User struct {
-	ID 			uint `json:"id"`
-	Email 		string `json:"userName"`
-	Status 		bool `json:"status"`
-	CreatedAt 	int64 `json:"createdAt"`
-	UpdatedAt 	int64 `json:"updatedAt"`
+	ID 			uint   	`json:"id"`
+	Email 		string 	`json:"email"`
+	FirstName 	string 	`json:"firstName"`
+	LastName 	string 	`json:"lastName"`
+	PhoneNumber string 	`json:"phoneNumber"`
+	School 		string 	`json:"school"`
+	Role 		string 	`json:"role"`
+	Status 		bool  	`json:"status"`
+	CreatedAt 	int64 	`json:"createdAt"`
+	UpdatedAt 	int64 	`json:"updatedAt"`
+	UserType 	string 	`json:"userType"`
 }
 
 func CheckLogin() Response {
@@ -28,11 +34,16 @@ func BuildUserResponse(user models.User) Response {
 
 func BuildUser(user models.User) User {
 	return User {
-		// ID: hashid.HashID(user.ID, hashid.UserID),
 		ID: user.ID,
 		Email: user.Email,
+		FirstName: user.FirstName,
+		LastName: user.LastName,
+		PhoneNumber: user.PhoneNumber,
+		School: user.School,
+		Role: user.Role,
 		Status: user.Status,
 		CreatedAt: user.CreatedAt.Unix(),
 		UpdatedAt: user.UpdatedAt.Unix(),
+		UserType: user.UserType,
 	}
 }

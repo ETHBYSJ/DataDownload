@@ -9,12 +9,12 @@ import (
 )
 
 type UserLoginService struct {
-	UserName string `form:"userName" json:"userName" binding:"required,email"`
+	Email string `form:"email" json:"email" binding:"required,email"`
 	Password string `form:"password" json:"password" binding:"required,min=6,max=16"`
 }
 
 func (service *UserLoginService) Login(c *gin.Context) serializer.Response {
-	expectedUser, err := models.GetUserByEmail(service.UserName)
+	expectedUser, err := models.GetUserByEmail(service.Email)
 	// 验证
 	if err != nil {
 		return serializer.Err(e.CodeCheckLogin, "用户邮箱或密码错误", e.ErrLogin)

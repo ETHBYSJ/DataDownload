@@ -9,13 +9,23 @@ import (
 )
 
 type UserRegisterService struct {
-	UserName string `form:"userName" json:"userName" binding:"required,email"`
-	Password string `form:"password" json:"password" binding:"required,min=6,max=16"`
+	Email 		string `form:"email" json:"email" binding:"required,email"`
+	FirstName	string `form:"firstName" json:"firstName" binding:"required"`
+	LastName 	string `form:"lastName" json:"lastName" binding:"required"`
+	PhoneNumber string `form:"phoneNumber" json:"phoneNumber" binding:"required"`
+	School		string `form:"school" json:"school" binding:"required"`
+	Role 		string `form:"role" json:"role" binding:"required"`
+	Password 	string `form:"password" json:"password" binding:"required,min=6,max=16"`
 }
 
 func (service *UserRegisterService) Register(c *gin.Context) serializer.Response {
 	user := models.NewUser()
-	user.Email = service.UserName
+	user.Email = service.Email
+	user.FirstName = service.FirstName
+	user.LastName = service.LastName
+	user.PhoneNumber = service.PhoneNumber
+	user.School = service.School
+	user.Role = service.Role
 	user.SetPassword(service.Password)
 	user.Status = true
 	// 创建用户

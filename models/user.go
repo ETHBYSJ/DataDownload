@@ -14,14 +14,36 @@ import (
 type User struct {
 	gorm.Model
 	Email 		string 	`gorm:"type:varchar(100);unique_index"`
+	FirstName 	string 	`gorm:"type:varchar(100) not null"`
+	LastName 	string 	`gorm:"type:varchar(100) not null"`
+	PhoneNumber string 	`gorm:"type:varchar(100) not null"`
+	School 		string 	`gorm:"type:varchar(100) not null"`
+	Role 		string 	`gorm:"type:varchar(100) not null"`
 	Password	string 	`json:"-"`
-	Status 		bool 	`gorm:"type:tinyint(1) not null;default:0"`
+	Status 		bool 	`gorm:"type:tinyint(1) not null;default:1"`
 	UserType	string 	`gorm:"type:varchar(8) not null;default:'User'"`
 	Language 	string 	`gorm:"type:varchar(8) not null;default:'zh-CN'"`
 }
 
 func NewUser() *User {
 	return &User{}
+}
+
+
+
+// 分页列出用户
+func ListUser(pageSize int, page int) ([]*User, uint64, error) {
+	users := make([]*User, 0)
+	err := DB.Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&users).Error
+	if err != nil {
+		return []*User{}, 0, err
+	}
+	var count uint64
+	err = DB.Table("users").Count(&count).Error
+	if err != nil {
+		return []*User{}, 0, err
+	}
+	return users, count, nil
 }
 
 func checkLanguage(language string) bool {
@@ -57,9 +79,14 @@ func GetUserByEmail(email string) (*User, error) {
 	return &user, result.Error
 }
 
+
 // 设定用户状态
-func (user *User) SetStatus(status int) error {
-	return DB.Model(&user).Update("status", status).Error
+func (user *User) SetStatus(status bool) error {
+	if status {
+		return DB.Model(&user).Update("status", true).Error
+	}
+	return DB.Model(&user).Update("status", false).Error
+
 }
 
 // 根据密码明文设定User的Password字段

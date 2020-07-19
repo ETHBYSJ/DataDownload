@@ -23,6 +23,11 @@ func addDefaultUser() {
 	if gorm.IsRecordNotFoundError(err) {
 		defaultUser := NewUser()
 		defaultUser.Email = "2296176046@qq.com"
+		defaultUser.FirstName = "FirstName"
+		defaultUser.LastName = "LastName"
+		defaultUser.PhoneNumber = "13262285856"
+		defaultUser.School = "SJTU"
+		defaultUser.Role = "Student"
 		defaultUser.Status = true
 		defaultUser.UserType = "Admin"
 		err := defaultUser.SetPassword("123456")

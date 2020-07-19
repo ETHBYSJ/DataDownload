@@ -23,6 +23,14 @@ func InitRouter() *gin.Engine {
 			user.POST("login", controllers.UserLogin)
 			user.GET("logout", controllers.UserLogout)
 		}
+		// 需要管理员权限才能访问
+		admin := v1.Group("admin")
+		admin.Use(middleware.AdminRequired())
+		{
+			admin.GET("list_user", controllers.ListUser)
+			admin.GET("update_status", controllers.UpdateUserStatus)
+			admin.POST("create_user", controllers.CreateUser)
+		}
 		// 需要登录才能访问
 		auth := v1.Group("")
 		auth.Use(middleware.AuthRequired())
@@ -30,6 +38,7 @@ func InitRouter() *gin.Engine {
 			user := auth.Group("user")
 			{
 				user.GET("me", controllers.UserMe)
+				user.GET("profile", controllers.UserMe)
 				user.GET("language", controllers.LanguageSet)
 			}
 			// file := auth.Group("file")
