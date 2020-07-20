@@ -69,6 +69,7 @@ type MergeService struct {
 	TotalChunks 	int 	`form:"totalChunks"`
 }
 
+
 // 设置分享
 func (service *ShareService) SetShare(c *gin.Context) serializer.Response {
 	err := filesystem.GlobalFs.SetShare(service.Name, service.Path, service.Share)

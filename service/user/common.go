@@ -26,6 +26,29 @@ type UserLogoutService struct {
 
 }
 
+type MyFilesService struct {
+	UID 		uint 	`form:"uid" json:"uid"`
+	Page 		int 	`form:"page" json:"page"`
+	PageSize	int		`form:"pageSize" json:"pageSize"`
+	Keyword 	string 	`form:"keyword" json:"keyword"`
+	Category 	int 	`form:"category" json:"category"`
+}
+
+// 我的文件
+func (service *MyFilesService) GetMyFiles(c *gin.Context) serializer.Response {
+	files, count, err := models.GetMyFiles(service.UID, service.Page, service.PageSize, service.Keyword, service.Category)
+	if err != nil {
+		return serializer.Err(e.CodeErrGetMyFiles, err.Error(), err)
+	}
+	return serializer.Response{
+		Code: 0,
+		Data: map[string]interface{}{
+			"files": files,
+			"count": count,
+		},
+	}
+}
+
 func (service *UserLanguageService) LanguageSet(c *gin.Context) serializer.Response {
 	user := CurrentUser(c)
 	if user == nil {

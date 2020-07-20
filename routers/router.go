@@ -30,6 +30,8 @@ func InitRouter() *gin.Engine {
 			admin.GET("list_user", controllers.ListUser)
 			admin.GET("update_status", controllers.UpdateUserStatus)
 			admin.POST("create_user", controllers.CreateUser)
+			admin.GET("files", controllers.AdminGetFiles)
+			admin.GET("review", controllers.SetReview)
 		}
 		// 需要登录才能访问
 		auth := v1.Group("")
@@ -40,6 +42,7 @@ func InitRouter() *gin.Engine {
 				user.GET("me", controllers.UserMe)
 				user.GET("profile", controllers.UserMe)
 				user.GET("language", controllers.LanguageSet)
+				user.GET("my_files", controllers.MyFiles)
 			}
 			// file := auth.Group("file")
 			file := auth.Group("file")

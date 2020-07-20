@@ -487,7 +487,7 @@ func (fs *FileSystem) ListByKeyword(sorting Sorting, dirPath string, keyword str
 	}
 	for _, f := range dir {
 		name := f.Name()
-		if strings.Index(name, keyword) == -1 {
+		if keyword != "" && strings.Index(name, keyword) == -1 {
 			continue
 		}
 		file := &FileInfo{
@@ -508,6 +508,7 @@ func (fs *FileSystem) ListByKeyword(sorting Sorting, dirPath string, keyword str
 		file.ID = fileModel.ID
 		file.OwnerID = fileModel.OwnerID
 		file.Share = fileModel.Share
+		file.Review = fileModel.Review
 		if file.IsDir {
 			listing.NumDirs++
 		} else {
@@ -551,6 +552,7 @@ func (fs *FileSystem) List(sorting Sorting, dirPath string) (*Listing, error) {
 		file.ID = fileModel.ID
 		file.OwnerID = fileModel.OwnerID
 		file.Share = fileModel.Share
+		file.Review = fileModel.Review
 		if file.IsDir {
 			listing.NumDirs++
 		} else {

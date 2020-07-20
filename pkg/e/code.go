@@ -22,9 +22,12 @@ const (
 	CodeErrRename = 30006
 	CodeErrDelete = 30007
 	CodeErrSetShare = 30008
+	CodeErrGetMyFiles = 30009
 	// admin
 	CodeListUserErr = 40001
 	CodeSetStatusErr = 40002
+	CodeGetFilesErr = 40003
+	CodeReviewErr = 40004
 
 	// 未定错误
 	CodeNotSet = -1

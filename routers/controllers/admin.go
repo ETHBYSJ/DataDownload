@@ -5,6 +5,28 @@ import (
 	"go-file-manager/service/admin"
 )
 
+// 修改审核状态
+func SetReview(c *gin.Context) {
+	var service admin.AdminReviewService
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.SetReview(c)
+		c.JSON(200, res)
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
+// 获取文件列表
+func AdminGetFiles(c *gin.Context) {
+	var service admin.AdminGetFilesService
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.AdminGetFiles(c)
+		c.JSON(200, res)
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
 // 创建新用户
 func CreateUser(c *gin.Context) {
 	var service admin.CreateUserService

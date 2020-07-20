@@ -28,6 +28,43 @@ func NewFile() *File {
 	return &File{}
 }
 
+// Admin 获取文件列表
+func AdminGetFiles(page int, pageSize int, keyword string, category int) ([]*File, uint64, error) {
+	files := make([]*File, 0)
+	var err error
+	if category == 0 {
+		// 未审核
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ?","%" + keyword + "%",  0, 0).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
+	} else if category == 1 {
+		// 已审核
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ?", "%" + keyword + "%", 1, 0).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
+	} else if category == 2 {
+		// 全部
+		err = DB.Model(&File{}).Where("name LIKE ? AND is_dir = ?", "%" + keyword + "%", 0).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
+	}
+
+	if err != nil {
+		return []*File{}, 0, err
+	}
+	var count uint64
+	if category == 0 {
+		// 未审核
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ?", "%" + keyword + "%", 0, 0).Count(&count).Error
+	} else if category == 1 {
+		// 已审核
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ?", "%" + keyword + "%", 1, 0).Count(&count).Error
+	} else if category == 2 {
+		// 全部
+		err = DB.Model(&File{}).Where("name LIKE ? AND is_dir = ?", "%" + keyword + "%", 0).Count(&count).Error
+	}
+	if err != nil {
+		return []*File{}, 0, err
+	}
+	return files, count, nil
+}
+
+
+
 // 根据路径名获取文件
 func GetFileByPath(path string) (*File, error) {
 	if path == "/" {
@@ -92,6 +129,11 @@ func DeleteFileByNameAndPath(name string, path string) error {
 // 重命名文件
 func (file *File) Rename(newName string) error {
 	return DB.Model(&file).Update("name", newName).Error
+}
+
+// 更新审核字段
+func (file *File) UpdateReview(review bool) error {
+	return DB.Model(&file).Update("review", review).Error
 }
 
 // 更新文件名

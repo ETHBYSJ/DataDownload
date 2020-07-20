@@ -29,7 +29,40 @@ func NewUser() *User {
 	return &User{}
 }
 
+// 我的文件
+func GetMyFiles(uid uint, page int, pageSize int, keyword string, category int) ([]*File, uint64, error) {
+	files := make([]*File, 0)
+	var err error
+	if category == 0 {
+		// 未审核
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND owner_id = ? AND is_dir = ?","%" + keyword + "%",  0, uid, 0).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
+	} else if category == 1 {
+		// 已审核
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND owner_id = ? AND is_dir = ?", "%" + keyword + "%", 1, uid, 0).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
+	} else if category == 2 {
+		// 全部
+		err = DB.Model(&File{}).Where("name LIKE ? AND owner_id = ? AND is_dir = ?", "%" + keyword + "%", uid, 0).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
+	}
 
+	if err != nil {
+		return []*File{}, 0, err
+	}
+	var count uint64
+	if category == 0 {
+		// 未审核
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND owner_id = ? AND is_dir = ?", "%" + keyword + "%", 0, uid, 0).Count(&count).Error
+	} else if category == 1 {
+		// 已审核
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND owner_id = ? AND is_dir = ?", "%" + keyword + "%", 1, uid, 0).Count(&count).Error
+	} else if category == 2 {
+		// 全部
+		err = DB.Model(&File{}).Where("name LIKE ? AND owner_id = ? AND is_dir = ?", "%" + keyword + "%", uid, 0).Count(&count).Error
+	}
+	if err != nil {
+		return []*File{}, 0, err
+	}
+	return files, count, nil
+}
 
 // 分页列出用户
 func ListUser(pageSize int, page int) ([]*User, uint64, error) {

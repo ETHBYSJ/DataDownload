@@ -6,10 +6,21 @@ import (
 	"go-file-manager/service/user"
 )
 
+// 我的文件
+func MyFiles(c *gin.Context) {
+	var service user.MyFilesService
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.GetMyFiles(c)
+		c.JSON(200, res)
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
 // 用户登录
 func UserLogin(c *gin.Context) {
 	var service user.UserLoginService
-	if err := c.ShouldBindJSON(&service); err == nil {
+	if err := c.ShouldBind(&service); err == nil {
 		res := service.Login(c)
 		c.JSON(200, res)
 	} else {
@@ -19,7 +30,7 @@ func UserLogin(c *gin.Context) {
 // 用户注册
 func UserRegister(c *gin.Context) {
 	var service user.UserRegisterService
-	if err := c.ShouldBindJSON(&service); err == nil {
+	if err := c.ShouldBind(&service); err == nil {
 		res := service.Register(c)
 		c.JSON(200, res)
 	} else {
@@ -45,7 +56,7 @@ func UserMe(c *gin.Context) {
 
 func LanguageSet(c *gin.Context) {
 	var service user.UserLanguageService
-	if err := c.ShouldBindQuery(&service); err == nil {
+	if err := c.ShouldBind(&service); err == nil {
 		res := service.LanguageSet(c)
 		c.JSON(200, res)
 	} else {
