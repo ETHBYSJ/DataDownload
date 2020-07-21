@@ -23,6 +23,7 @@ const (
 	CodeErrDelete = 30007
 	CodeErrSetShare = 30008
 	CodeErrGetMyFiles = 30009
+	CodeErrDownload = 30010
 	// admin
 	CodeListUserErr = 40001
 	CodeSetStatusErr = 40002

@@ -129,7 +129,6 @@ func (fs *FileSystem) SaveUploadedFile(file *multipart.FileHeader, dst string) e
 }
 
 // 合并分块文件
-// TODO 并发上传同一文件会出错
 func (fs *FileSystem) MergeChunk(name string, path string, user *models.User, md5 string, totalChunks int) (*CheckInfo, error) {
 	target := path
 	if path == "/" {
@@ -208,7 +207,6 @@ func (fs *FileSystem) MergeChunk(name string, path string, user *models.User, md
 				}
 				// 校验成功，更新数据库相应字段
 				fm.UpdateMerge(true)
-				// TODO 合并成功后删除临时文件
 				for i := 1; i <= totalChunks; i++ {
 					currentPath := path
 					if path == "/" {
@@ -267,7 +265,6 @@ func (fs *FileSystem) UploadChunk(name string, path string, user *models.User, m
 			return &CheckInfo{SkipUpload: true, Uploaded: []int{}, NeedMerge: !fm.Merge, Identifier: md5, FileName: name, RelativePath: path, TotalChunks: totalChunks}, nil
 		} else {
 			// 把上传的文件保存到提供的路径
-
 			err := fs.SaveUploadedFile(file, savePath)
 			if err != nil {
 				return nil, err
@@ -337,6 +334,8 @@ func (fs *FileSystem) CheckChunk(name string, path string, user *models.User, md
 		file.OwnerID = user.ID
 		file.Owner = *user
 		file.Size = size
+		// 文件默认是共享的
+		file.Share = true
 		if err := models.DB.Create(&file).Error; err != nil {
 			util.Log().Warning("创建文件记录失败")
 			return nil, e.ErrCreateFileRecord
@@ -447,8 +446,8 @@ func (fs *FileSystem) CreateDirectory(user *models.User, name, dirPath string) (
 		IsDir: true,
 		Owner: *user,
 		OwnerID: user.ID,
-		Review: true,	// 文件夹默认是审核通过的
-		Share: true,  // 默认公开
+		Review: true,	// 文件夹默认不需要审核
+		Share: true,  // 文件夹默认是共享的
 	}
 	id, err := newFolder.Create()
 	if err != nil {

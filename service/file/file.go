@@ -7,6 +7,8 @@ import (
 	"go-file-manager/pkg/e"
 	"go-file-manager/pkg/filesystem"
 	"go-file-manager/pkg/serializer"
+	"net/http"
+	"net/url"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -69,6 +71,36 @@ type MergeService struct {
 	TotalChunks 	int 	`form:"totalChunks"`
 }
 
+type DownloadService struct {
+	Name	string	`form:"name" json:"name"`
+	Path 	string 	`form:"path" json:"path"`
+}
+
+// 下载文件
+func (service *DownloadService) Download(c *gin.Context) serializer.Response {
+	diskFile, err := filesystem.GlobalFs.Fs.Open(filepath.Join(service.Path, service.Name))
+	if err != nil {
+		return serializer.Err(e.CodeErrDownload, err.Error(), err)
+	}
+
+	fm, err := models.GetFileByNameAndPath(service.Name, service.Path)
+	if err != nil {
+		return serializer.Err(e.CodeErrDownload, err.Error(), err)
+	}
+	/*
+	if !fm.Review {
+		return serializer.Err(e.CodeErrUnReviewed, e.ErrFileUnReviewed.Error(), e.ErrFileUnReviewed)
+	}
+	*/
+	defer diskFile.Close()
+
+	// 设置头，通知浏览器为下载而不是预览
+	c.Header("Content-Disposition", "attachment; filename=\"" + url.QueryEscape(service.Name) + "\"; filename*=utf-8''" + url.QueryEscape(service.Name))
+	http.ServeContent(c.Writer, c.Request, service.Name, fm.UpdatedAt, diskFile)
+	return serializer.Response{
+		Code: 0,
+	}
+}
 
 // 设置分享
 func (service *ShareService) SetShare(c *gin.Context) serializer.Response {

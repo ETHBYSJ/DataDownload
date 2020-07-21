@@ -29,8 +29,8 @@ func Init() {
 	}
 	*/
 	if conf.SystemConfig.Debug {
-		db.LogMode(true)
-		// db.LogMode(false)
+		// db.LogMode(true)
+		db.LogMode(false)
 	} else {
 		db.LogMode(false)
 	}

@@ -59,6 +59,8 @@ func InitRouter() *gin.Engine {
 				file.GET("chunk", controllers.CheckChunk)
 				file.POST("chunk", controllers.UploadChunk)
 				file.GET("merge", controllers.MergeChunk)
+				// 下载
+				file.POST("download", controllers.Download)
 			}
 		}
 

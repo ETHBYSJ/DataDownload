@@ -1,11 +1,17 @@
 package middleware
 
 import (
+	"bytes"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"go-file-manager/models"
 	"go-file-manager/pkg/acl"
+	"go-file-manager/pkg/e"
 	"go-file-manager/pkg/serializer"
 	"go-file-manager/pkg/util"
+	"go-file-manager/routers/controllers"
+	"go-file-manager/service/file"
+	"io/ioutil"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -29,15 +35,49 @@ func CasbinMiddleware() gin.HandlerFunc {
 		util.Log().Info("intercept request. uid = %v, path = %v, method = %v\n", uid, p, m)
 		// 检查请求权限
 		// list和list_by_keyword不需要所有者权限，可以直接放行，Admin用户放行
+		// 此外，Admin用户请求下载时无视文件审核情况
 		if user.UserType == "Admin" /*|| strings.Contains(p, "list") || strings.Contains(p, "list_by_keyword")*/ {
 			c.Next()
 		} else {
 			// 根据各方法分别判断
-			if strings.Contains(p, "set_share") {
+			if strings.Contains(p, "download") {
+				// download
+				var service file.DownloadService
+			 	data, err := c.GetRawData()
+			 	err = json.Unmarshal(data, &service)
+			 	if err != nil {
+			 		c.JSON(200, controllers.ErrorResponse(err))
+			 		c.Abort()
+			 		return
+				}
+				c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(data))
+				// 在非共享状态下，禁止下载
+				fm, err := models.GetFileByNameAndPath(service.Name, service.Path)
+				if err != nil {
+					// 404
+					c.JSON(e.CodeNotFound, serializer.NotFound())
+					c.Abort()
+					return
+				}
+				if !fm.Review {
+					c.JSON(e.CodeNoPermissionErr, serializer.PermissionDenied())
+					c.Abort()
+					return
+				}
+				// util.Log().Info("owner: %v, share: %v", fm.OwnerID, fm.Share)
+				if fm.OwnerID == uid || fm.Share {
+					// 如果是所有者或者已经状态设为共享，则允许访问
+					c.Next()
+					return
+				}
+				// 否则返回403
+				c.JSON(e.CodeNoPermissionErr, serializer.PermissionDenied())
+				c.Abort()
+				return
+			} else if strings.Contains(p, "set_share") {
 				// set_share
 				path, exists := c.GetQuery("path")
 				if !exists {
-					// 参数错误，交给下游处理掉即可
 					c.Next()
 					return
 				}

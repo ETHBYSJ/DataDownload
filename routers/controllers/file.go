@@ -5,6 +5,19 @@ import (
 	"go-file-manager/service/file"
 )
 
+// 下载文件
+func Download(c *gin.Context) {
+	var service file.DownloadService
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.Download(c)
+		if res.Code != 0 {
+			c.JSON(200, res)
+		}
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
 // 设置分享
 func SetShare(c *gin.Context) {
 	var service file.ShareService
