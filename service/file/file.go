@@ -96,6 +96,7 @@ func (service *DownloadService) Download(c *gin.Context) serializer.Response {
 
 	// 设置头，通知浏览器为下载而不是预览
 	c.Header("Content-Disposition", "attachment; filename=\"" + url.QueryEscape(service.Name) + "\"; filename*=utf-8''" + url.QueryEscape(service.Name))
+	c.Header("Content-Type", "application/octet-stream")
 	http.ServeContent(c.Writer, c.Request, service.Name, fm.UpdatedAt, diskFile)
 	return serializer.Response{
 		Code: 0,

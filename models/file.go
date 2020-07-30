@@ -34,13 +34,13 @@ func AdminGetFiles(page int, pageSize int, keyword string, category int) ([]*Fil
 	var err error
 	if category == 0 {
 		// 未审核
-		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ?","%" + keyword + "%",  0, 0).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ? AND merge = ?","%" + keyword + "%",  0, 0, 1).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
 	} else if category == 1 {
 		// 已审核
-		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ?", "%" + keyword + "%", 1, 0).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ? AND merge = ?", "%" + keyword + "%", 1, 0, 1).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
 	} else if category == 2 {
 		// 全部
-		err = DB.Model(&File{}).Where("name LIKE ? AND is_dir = ?", "%" + keyword + "%", 0).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND is_dir = ? AND merge = ?", "%" + keyword + "%", 0, 1).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
 	}
 
 	if err != nil {
@@ -49,13 +49,13 @@ func AdminGetFiles(page int, pageSize int, keyword string, category int) ([]*Fil
 	var count uint64
 	if category == 0 {
 		// 未审核
-		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ?", "%" + keyword + "%", 0, 0).Count(&count).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ? AND merge = ?", "%" + keyword + "%", 0, 0, 1).Count(&count).Error
 	} else if category == 1 {
 		// 已审核
-		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ?", "%" + keyword + "%", 1, 0).Count(&count).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ? AND merge = ?", "%" + keyword + "%", 1, 0, 1).Count(&count).Error
 	} else if category == 2 {
 		// 全部
-		err = DB.Model(&File{}).Where("name LIKE ? AND is_dir = ?", "%" + keyword + "%", 0).Count(&count).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND is_dir = ? AND merge = ?", "%" + keyword + "%", 0, 1).Count(&count).Error
 	}
 	if err != nil {
 		return []*File{}, 0, err

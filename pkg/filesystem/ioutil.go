@@ -70,7 +70,7 @@ func WriteFile(fs Fs, filename string, data []byte, perm os.FileMode) error {
 }
 
 func AppendFile(fs Fs, filename string, data []byte, perm os.FileMode) error {
-	f, err := fs.OpenFile(filename, os.O_APPEND, perm)
+	f, err := fs.OpenFile(filename, os.O_APPEND|os.O_RDWR, perm)
 	if err != nil {
 		return err
 	}

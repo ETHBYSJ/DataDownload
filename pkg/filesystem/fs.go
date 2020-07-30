@@ -191,6 +191,9 @@ func (fs *FileSystem) MergeChunk(name string, path string, user *models.User, md
 						return nil, e.ErrMergeFile
 					}
 					err = AppendFile(fs.Fs, target, fileBuffer, 0777)
+					if err != nil {
+						return nil, err
+					}
 				}
 				// 重新打开文件，目的是获取md5
 				f, err = fs.Fs.OpenFile(target, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0777)

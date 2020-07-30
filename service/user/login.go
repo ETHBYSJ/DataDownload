@@ -25,6 +25,7 @@ func (service *UserLoginService) Login(c *gin.Context) serializer.Response {
 	if !expectedUser.Status {
 		return serializer.Err(e.CodeNoPermissionErr, "账号封禁中", e.ErrUserStatus)
 	}
+	// util.DeleteSession(c, "user_id")
 	util.SetSession(c, map[string]interface{}{
 		"user_id": expectedUser.ID,
 	})
