@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type FileService struct {
@@ -48,7 +49,7 @@ type CreateDirectoryService struct {
 }
 
 type RenameService struct {
-	Path string `form:"path" json:"path"`
+	Path 	string `form:"path" json:"path"`
 	OldName string `form:"oldName" json:"oldName"`
 	NewName string `form:"newName" json:"newName"`
 }
@@ -75,6 +76,64 @@ type DownloadService struct {
 	Name	string	`form:"name" json:"name"`
 	Path 	string 	`form:"path" json:"path"`
 }
+
+type DownloadStaticService struct {
+	Name	string `form:"name"`
+	Path	string `form:"path"`
+}
+
+type DownloadNoAuthService struct {
+	ID	string	`form:"id"`
+}
+
+func (service *DownloadNoAuthService) Download(c *gin.Context) serializer.Response {
+	item, exist := filesystem.GlobalFs.CheckDownload(service.ID)
+	// fmt.Println(item)
+	if !exist {
+		return serializer.Err(e.CodeDownloadFileNotExist, e.ErrDownloadFileNotExist.Error(), e.ErrDownloadFileNotExist)
+	} else {
+		diskFile, err := filesystem.GlobalFs.Fs.Open(filepath.Join(item.Path, item.Name))
+		if err != nil {
+			return serializer.Err(e.CodeErrDownload, err.Error(), err)
+		}
+		defer diskFile.Close()
+		// 设置头，通知浏览器为下载而不是预览
+		c.Header("Content-Disposition", "attachment; filename=\"" + url.QueryEscape(item.Name) + "\"; filename*=utf-8''" + url.QueryEscape(item.Name))
+		c.Header("Content-Type", "application/octet-stream")
+		http.ServeContent(c.Writer, c.Request, item.Name, time.Now(), diskFile)
+		return serializer.Response{
+			Code: 0,
+		}
+	}
+}
+
+// 创建文件下载会话
+func (service *DownloadStaticService) CreateDownloadSession(c *gin.Context) serializer.Response {
+	// 获取url
+	downloadURL := filesystem.GlobalFs.GetDownloadURL(service.Name, service.Path, time.Hour)
+	return serializer.Response{
+		Code: 0,
+		Data: downloadURL,
+	}
+}
+
+// 下载文件，针对静态路径
+func (service *DownloadStaticService) Download(c *gin.Context) serializer.Response {
+	diskFile, err := filesystem.GlobalFs.Fs.Open(filepath.Join(service.Path, service.Name))
+	if err != nil {
+		return serializer.Err(e.CodeErrDownload, err.Error(), err)
+	}
+	defer diskFile.Close()
+	// 设置头，通知浏览器为下载而不是预览
+	c.Header("Content-Disposition", "attachment; filename=\"" + url.QueryEscape(service.Name) + "\"; filename*=utf-8''" + url.QueryEscape(service.Name))
+	c.Header("Content-Type", "application/octet-stream")
+	http.ServeContent(c.Writer, c.Request, service.Name, time.Now(), diskFile)
+
+	return serializer.Response{
+		Code: 0,
+	}
+}
+
 
 // 下载文件
 func (service *DownloadService) Download(c *gin.Context) serializer.Response {

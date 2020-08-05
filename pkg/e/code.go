@@ -24,6 +24,7 @@ const (
 	CodeErrSetShare = 30008
 	CodeErrGetMyFiles = 30009
 	CodeErrDownload = 30010
+	CodeDownloadFileNotExist = 30011
 	// admin
 	CodeListUserErr = 40001
 	CodeSetStatusErr = 40002

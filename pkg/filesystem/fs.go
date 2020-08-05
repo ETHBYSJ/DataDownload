@@ -3,7 +3,9 @@ package filesystem
 import (
 	MD5 "crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"go-file-manager/models"
+	"go-file-manager/pkg/conf"
 	"go-file-manager/pkg/e"
 	"go-file-manager/pkg/util"
 	"io"
@@ -66,11 +68,43 @@ type CheckInfo struct {
 type FileSystem struct {
 	// 互斥锁
 	locker *util.Table
+	// 缓存
+	table *util.Table
 	// 文件系统
 	// Fs *FsWrapper
 	Fs Fs
 	// 钩子函数
 	Hooks map[string][]Hook
+}
+
+type CacheFileItem struct {
+	Name	string
+	Path 	string
+}
+
+func (fs *FileSystem) CheckDownload(id string) (*CacheFileItem, bool) {
+	file, err := fs.table.Value("download_" + id)
+	// fmt.Println(id)
+	if file == nil || err != nil {
+		return nil, false
+	}
+	data := file.Data()
+	item, ok := data.(CacheFileItem)
+	if !ok {
+		return nil, false
+	}
+	return &item, true
+}
+
+// 生成下载URL
+func (fs *FileSystem) GetDownloadURL(name string, path string, duration time.Duration) string {
+	// 生成
+	downloadSessionID := util.RandStringRunes(16)
+	base := conf.SystemConfig.Host + conf.SystemConfig.Out
+	uri := fmt.Sprintf("/api/v1/file/download_noauth?id=%s", downloadSessionID)
+	url := base + uri
+	fs.table.Add("download_" + downloadSessionID, duration, CacheFileItem{Name: name, Path: path})
+	return url
 }
 
 // 设置文件分享状态

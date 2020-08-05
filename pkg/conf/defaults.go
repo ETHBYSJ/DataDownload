@@ -6,8 +6,10 @@ var DatabaseConfig = &database{
 }
 
 var SystemConfig = &system{
+	Host: "127.0.0.1",
 	Debug: 	false,
 	Listen: ":8080",
+	Out: "8080",
 	SessionSecret: "file-manager",
 	HashIDSalt: "file-manager",
 	StorageRoot: "D:\\storage",

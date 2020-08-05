@@ -266,6 +266,7 @@ func (table *Table) NotFoundAdd(key interface{}, lifeSpan time.Duration, data in
 }
 
 func (table *Table) Value(key interface{}, args ...interface{}) (*Item, error) {
+	now := time.Now()
 	table.RLock()
 	r, ok := table.items[key]
 	loadData := table.loadData
@@ -273,7 +274,12 @@ func (table *Table) Value(key interface{}, args ...interface{}) (*Item, error) {
 
 	if ok {
 		//update visit count and visit time.
-		r.KeepAlive()
+		// r.KeepAlive()
+		if r.createTime.Add(r.duration).Before(now) {
+			// 键已过期，清理缓存
+			table.checkExpire()
+			return nil, nil
+		}
 		return r, nil
 	}
 

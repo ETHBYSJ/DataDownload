@@ -1,9 +1,61 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-file-manager/service/file"
 )
+
+// 通过url进行文件下载，不需要登录
+func DownloadNoAuth(c *gin.Context) {
+	var service file.DownloadNoAuthService
+	if err := c.BindQuery(&service); err == nil {
+		fmt.Println("id = ", service.ID)
+		res := service.Download(c)
+		if res.Code != 0 {
+			c.JSON(200, res)
+		}
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
+
+// 下载文件，静态路径
+func DownloadStatic(c *gin.Context) {
+	var service file.DownloadStaticService
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.Download(c)
+		if res.Code != 0 {
+			c.JSON(200, res)
+		}
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
+// 创建文件下载会话
+func CreateDownloadSession(c *gin.Context) {
+	var service file.DownloadStaticService
+	if err := c.BindQuery(&service); err == nil {
+		res := service.CreateDownloadSession(c)
+		c.JSON(200, res)
+	} else {
+		fmt.Println(err)
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
+// 仅供测试用
+func DownloadTest(c *gin.Context) {
+	var service file.DownloadStaticService
+	service.Path = "/"
+	service.Name = "big.exe"
+	res := service.Download(c)
+	if res.Code != 0 {
+		c.JSON(200, res)
+	}
+}
 
 // 下载文件
 func Download(c *gin.Context) {
@@ -114,7 +166,7 @@ func ListByKeyword(c *gin.Context) {
 // 列出目录内容
 func ListDirectory(c *gin.Context) {
 	var service file.ListDirectoryService
-	if err := c.BindQuery(&service); err == nil {
+	if err := c.ShouldBindQuery(&service); err == nil {
 		res := service.ListDirectory(c)
 		c.JSON(200, res)
 	} else {

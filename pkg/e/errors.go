@@ -27,6 +27,7 @@ var (
 	ErrUnlock = errors.New("解锁失败")
 	ErrDelete = errors.New("删除失败")
 	ErrTryToGetRoot = errors.New("试图获取根目录在数据库中的记录")
+	ErrDownloadFileNotExist = errors.New("下载链接过期或文件不存在")
 )
 // 用户相关
 var (

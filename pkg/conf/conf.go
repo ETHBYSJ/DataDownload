@@ -17,8 +17,10 @@ type database struct {
 }
 
 type system struct {
+	Host 			string
 	Debug 			bool
 	Listen			string `validate:"required"`
+	Out 			string `validate:"required"`
 	SessionSecret 	string
 	HashIDSalt		string
 	StorageRoot		string

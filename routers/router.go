@@ -15,7 +15,6 @@ func InitRouter() *gin.Engine {
 	v1 := r.Group("/api/v1")
 	v1.Use(middleware.Session(conf.SystemConfig.SessionSecret))
 	v1.Use(middleware.CurrentUser())
-	// v1.Use(middleware.Cors())
 	{
 		user := v1.Group("user")
 		{
@@ -33,6 +32,17 @@ func InitRouter() *gin.Engine {
 			admin.GET("files", controllers.AdminGetFiles)
 			admin.GET("review", controllers.SetReview)
 		}
+
+		guest := v1.Group("")
+		{
+			file := guest.Group("file")
+			{
+				file.POST("download_static", controllers.DownloadStatic)
+				file.GET("download_test", controllers.DownloadTest)
+				file.GET("download_noauth", controllers.DownloadNoAuth)
+			}
+		}
+
 		// 需要登录才能访问
 		auth := v1.Group("")
 		auth.Use(middleware.AuthRequired())
@@ -60,7 +70,9 @@ func InitRouter() *gin.Engine {
 				file.POST("chunk", controllers.UploadChunk)
 				file.GET("merge", controllers.MergeChunk)
 				// 下载
-				file.POST("download", controllers.Download)
+				// file.POST("download", controllers.Download)
+				// 创建文件下载会话
+				file.GET("download_session", controllers.CreateDownloadSession)
 			}
 		}
 

@@ -1,17 +1,11 @@
 package middleware
 
 import (
-	"bytes"
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"go-file-manager/models"
 	"go-file-manager/pkg/acl"
-	"go-file-manager/pkg/e"
 	"go-file-manager/pkg/serializer"
 	"go-file-manager/pkg/util"
-	"go-file-manager/routers/controllers"
-	"go-file-manager/service/file"
-	"io/ioutil"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -40,6 +34,7 @@ func CasbinMiddleware() gin.HandlerFunc {
 			c.Next()
 		} else {
 			// 根据各方法分别判断
+			/*
 			if strings.Contains(p, "download") {
 				// download
 				var service file.DownloadService
@@ -74,7 +69,8 @@ func CasbinMiddleware() gin.HandlerFunc {
 				c.JSON(e.CodeNoPermissionErr, serializer.PermissionDenied())
 				c.Abort()
 				return
-			} else if strings.Contains(p, "set_share") {
+			}
+			*/if strings.Contains(p, "set_share") {
 				// set_share
 				path, exists := c.GetQuery("path")
 				if !exists {
@@ -240,6 +236,9 @@ func CasbinMiddleware() gin.HandlerFunc {
 					c.Abort()
 					return
 				}
+			} else {
+				c.Next()
+				return
 			}
 
 		}

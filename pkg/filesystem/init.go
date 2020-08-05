@@ -11,4 +11,5 @@ var GlobalFs FileSystem
 func Init() {
 	GlobalFs.Fs = &BasePathFs{source: NewOsFs(), path: conf.SystemConfig.StorageRoot}
 	GlobalFs.locker = util.NewTable()
+	GlobalFs.table = util.NewTable()
 }
