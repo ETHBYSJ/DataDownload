@@ -5,8 +5,8 @@ import (
 )
 
 func PermissionDenied() Response {
-	return Response {
+	return Response{
 		Code: e.CodeNoPermissionErr,
-		Msg: "对资源的访问被拒绝",
+		Msg:  "对资源的访问被拒绝",
 	}
 }

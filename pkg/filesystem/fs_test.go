@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-
 func TestList(t *testing.T) {
 	asserts := assert.New(t)
 	fs := FileSystem{Fs: &BasePathFs{source: NewOsFs(), path: "D:\\storage"}}

@@ -5,24 +5,24 @@ import (
 )
 
 func NotFound() Response {
-	return Response {
+	return Response{
 		Code: e.CodeNotFound,
-		Msg: "资源不存在",
+		Msg:  "资源不存在",
 	}
 }
 
 // 错误处理
 type AppError struct {
-	Code		int
-	Msg 		string
-	RawError	error
+	Code     int
+	Msg      string
+	RawError error
 }
 
 func NewError(code int, msg string, err error) AppError {
 	return AppError{
-		Code: 		code,
-		Msg: 		msg,
-		RawError: 	err,
+		Code:     code,
+		Msg:      msg,
+		RawError: err,
 	}
 }
 
@@ -52,8 +52,8 @@ func Err(errCode int, msg string, err error) Response {
 	}
 
 	res := Response{
-		Code: 	errCode,
-		Msg: 	msg,
+		Code: errCode,
+		Msg:  msg,
 	}
 	res.Error = err.Error()
 	return res

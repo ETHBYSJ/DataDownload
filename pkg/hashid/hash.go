@@ -52,7 +52,3 @@ func DecodeHashID(id string, t int) (uint, error) {
 	}
 	return uint(v[0]), nil
 }
-
-
-
-

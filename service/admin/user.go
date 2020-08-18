@@ -8,24 +8,24 @@ import (
 )
 
 type ListUserService struct {
-	Page 		int `form:"page" json:"page"`
-	PageSize 	int	`form:"pageSize" json:"pageSize"`
+	Page     int `form:"page" json:"page"`
+	PageSize int `form:"pageSize" json:"pageSize"`
 }
 
 type UpdateUserStatusService struct {
-	ID 		uint 	`form:"id" json:"id"`
-	Status 	bool	`form:"status" json:"status"`
+	ID     uint `form:"id" json:"id"`
+	Status bool `form:"status" json:"status"`
 }
 
 type CreateUserService struct {
-	Email 		string `form:"email" json:"email" binding:"required,email"`
-	FirstName	string `form:"firstName" json:"firstName" binding:"required"`
-	LastName 	string `form:"lastName" json:"lastName" binding:"required"`
+	Email       string `form:"email" json:"email" binding:"required,email"`
+	FirstName   string `form:"firstName" json:"firstName" binding:"required"`
+	LastName    string `form:"lastName" json:"lastName" binding:"required"`
 	PhoneNumber string `form:"phoneNumber" json:"phoneNumber" binding:"required"`
-	School		string `form:"school" json:"school" binding:"required"`
-	Role 		string `form:"role" json:"role" binding:"required"`
-	Password 	string `form:"password" json:"password" binding:"required,min=6,max=16"`
-	UserType 	string `form:"userType" json:"userType" binding:"required"`
+	School      string `form:"school" json:"school" binding:"required"`
+	Role        string `form:"role" json:"role" binding:"required"`
+	Password    string `form:"password" json:"password" binding:"required,min=6,max=16"`
+	UserType    string `form:"userType" json:"userType" binding:"required"`
 }
 
 // 创建新用户
@@ -46,7 +46,6 @@ func (service *CreateUserService) CreateUserService(c *gin.Context) serializer.R
 	}
 	return serializer.Response{Msg: "创建新用户成功"}
 }
-
 
 // 更新用户状态
 func (service *UpdateUserStatusService) UpdateUserStatus(c *gin.Context) serializer.Response {

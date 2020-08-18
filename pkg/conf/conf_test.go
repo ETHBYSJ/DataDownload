@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-
 func TestConfParse(t *testing.T) {
 	asserts := assert.New(t)
 	Init("../../conf/app.ini")
@@ -24,7 +23,4 @@ func TestConfParse(t *testing.T) {
 	err = mapSection("system", SystemConfig)
 	asserts.Equal(SystemConfig.Debug, true)
 
-
 }
-
-

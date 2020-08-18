@@ -29,10 +29,3 @@ func ReadAll(path string) ([]byte, error) {
 	}
 	return ioutil.ReadAll(file)
 }
-
-
-
-
-
-
-

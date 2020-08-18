@@ -35,41 +35,41 @@ func CasbinMiddleware() gin.HandlerFunc {
 		} else {
 			// 根据各方法分别判断
 			/*
-			if strings.Contains(p, "download") {
-				// download
-				var service file.DownloadService
-			 	data, err := c.GetRawData()
-			 	err = json.Unmarshal(data, &service)
-			 	if err != nil {
-			 		c.JSON(200, controllers.ErrorResponse(err))
-			 		c.Abort()
-			 		return
-				}
-				c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(data))
-				// 在非共享状态下，禁止下载
-				fm, err := models.GetFileByNameAndPath(service.Name, service.Path)
-				if err != nil {
-					// 404
-					c.JSON(e.CodeNotFound, serializer.NotFound())
-					c.Abort()
-					return
-				}
-				if !fm.Review {
+				if strings.Contains(p, "download") {
+					// download
+					var service file.DownloadService
+				 	data, err := c.GetRawData()
+				 	err = json.Unmarshal(data, &service)
+				 	if err != nil {
+				 		c.JSON(200, controllers.ErrorResponse(err))
+				 		c.Abort()
+				 		return
+					}
+					c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(data))
+					// 在非共享状态下，禁止下载
+					fm, err := models.GetFileByNameAndPath(service.Name, service.Path)
+					if err != nil {
+						// 404
+						c.JSON(e.CodeNotFound, serializer.NotFound())
+						c.Abort()
+						return
+					}
+					if !fm.Review {
+						c.JSON(e.CodeNoPermissionErr, serializer.PermissionDenied())
+						c.Abort()
+						return
+					}
+					// util.Log().Info("owner: %v, share: %v", fm.OwnerID, fm.Share)
+					if fm.OwnerID == uid || fm.Share {
+						// 如果是所有者或者已经状态设为共享，则允许访问
+						c.Next()
+						return
+					}
+					// 否则返回403
 					c.JSON(e.CodeNoPermissionErr, serializer.PermissionDenied())
 					c.Abort()
 					return
 				}
-				// util.Log().Info("owner: %v, share: %v", fm.OwnerID, fm.Share)
-				if fm.OwnerID == uid || fm.Share {
-					// 如果是所有者或者已经状态设为共享，则允许访问
-					c.Next()
-					return
-				}
-				// 否则返回403
-				c.JSON(e.CodeNoPermissionErr, serializer.PermissionDenied())
-				c.Abort()
-				return
-			}
 			*/if strings.Contains(p, "set_share") {
 				// set_share
 				path, exists := c.GetQuery("path")
@@ -242,7 +242,6 @@ func CasbinMiddleware() gin.HandlerFunc {
 			}
 
 		}
-
 
 		c.Next()
 	}

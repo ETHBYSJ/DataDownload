@@ -7,8 +7,6 @@ import (
 	"go-file-manager/routers/controllers"
 )
 
-
-
 func InitRouter() *gin.Engine {
 	r := gin.Default()
 	r.MaxMultipartMemory = 1024 << 20

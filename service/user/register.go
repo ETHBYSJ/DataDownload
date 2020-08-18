@@ -9,13 +9,13 @@ import (
 )
 
 type UserRegisterService struct {
-	Email 		string `form:"email" json:"email" binding:"required,email"`
-	FirstName	string `form:"firstName" json:"firstName" binding:"required"`
-	LastName 	string `form:"lastName" json:"lastName" binding:"required"`
+	Email       string `form:"email" json:"email" binding:"required,email"`
+	FirstName   string `form:"firstName" json:"firstName" binding:"required"`
+	LastName    string `form:"lastName" json:"lastName" binding:"required"`
 	PhoneNumber string `form:"phoneNumber" json:"phoneNumber" binding:"required"`
-	School		string `form:"school" json:"school" binding:"required"`
-	Role 		string `form:"role" json:"role" binding:"required"`
-	Password 	string `form:"password" json:"password" binding:"required,min=6,max=16"`
+	School      string `form:"school" json:"school" binding:"required"`
+	Role        string `form:"role" json:"role" binding:"required"`
+	Password    string `form:"password" json:"password" binding:"required,min=6,max=16"`
 }
 
 func (service *UserRegisterService) Register(c *gin.Context) serializer.Response {

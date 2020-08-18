@@ -1,12 +1,17 @@
 package file
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-file-manager/models"
 	"go-file-manager/pkg/acl"
+	"go-file-manager/pkg/conf"
 	"go-file-manager/pkg/e"
+	"go-file-manager/pkg/exec"
 	"go-file-manager/pkg/filesystem"
+	"go-file-manager/pkg/mail"
 	"go-file-manager/pkg/serializer"
+	"go-file-manager/pkg/util"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -20,21 +25,21 @@ type FileService struct {
 }
 
 type ShareService struct {
-	Path 	string 	`form:"path" json:"path"`
-	Name 	string 	`form:"name" json:"name"`
-	Share 	bool 	`form:"share" json:"share"`
+	Path  string `form:"path" json:"path"`
+	Name  string `form:"name" json:"name"`
+	Share bool   `form:"share" json:"share"`
 }
 
 type ListByKeywordService struct {
-	By 	 	string 	`form:"by" json:"by"`
-	Asc  	bool 	`form:"asc" json:"asc"`
-	Path 	string 	`form:"path" json:"path"`
-	Keyword string 	`form:"keyword" json:"keyword"`
+	By      string `form:"by" json:"by"`
+	Asc     bool   `form:"asc" json:"asc"`
+	Path    string `form:"path" json:"path"`
+	Keyword string `form:"keyword" json:"keyword"`
 }
 
 type ListDirectoryService struct {
-	By 	 string `form:"by" json:"by"`
-	Asc  bool 	`form:"asc" json:"asc"`
+	By   string `form:"by" json:"by"`
+	Asc  bool   `form:"asc" json:"asc"`
 	Path string `form:"path" json:"path"`
 }
 
@@ -49,41 +54,48 @@ type CreateDirectoryService struct {
 }
 
 type RenameService struct {
-	Path 	string `form:"path" json:"path"`
+	Path    string `form:"path" json:"path"`
 	OldName string `form:"oldName" json:"oldName"`
 	NewName string `form:"newName" json:"newName"`
 }
 
 type ChunkService struct {
-	ChunkNumber 		int 	`form:"chunkNumber"`
-	ChunkSize 			int		`form:"chunkSize"`
-	CurrentChunkSize	int 	`form:"currentChunkSize"`
-	TotalSize			int64 	`form:"totalSize"`
-	Identifier 			string 	`form:"identifier"`
-	FileName 			string 	`form:"filename"`
-	RelativePath 		string 	`form:"relativePath"`
-	TotalChunks 		int		`form:"totalChunks"`
+	ChunkNumber      int    `form:"chunkNumber"`
+	ChunkSize        int    `form:"chunkSize"`
+	CurrentChunkSize int    `form:"currentChunkSize"`
+	TotalSize        int64  `form:"totalSize"`
+	Identifier       string `form:"identifier"`
+	FileName         string `form:"filename"`
+	RelativePath     string `form:"relativePath"`
+	TotalChunks      int    `form:"totalChunks"`
 }
 
 type MergeService struct {
-	FileName 		string 	`form:"filename"`
-	RelativePath 	string 	`form:"relativePath"`
-	Identifier 		string 	`form:"identifier"`
-	TotalChunks 	int 	`form:"totalChunks"`
+	FileName     string `form:"filename"`
+	RelativePath string `form:"relativePath"`
+	Identifier   string `form:"identifier"`
+	TotalChunks  int    `form:"totalChunks"`
 }
 
 type DownloadService struct {
-	Name	string	`form:"name" json:"name"`
-	Path 	string 	`form:"path" json:"path"`
+	Name string `form:"name" json:"name"`
+	Path string `form:"path" json:"path"`
 }
 
 type DownloadStaticService struct {
-	Name	string `form:"name"`
-	Path	string `form:"path"`
+	Name string `form:"name"`
+	Path string `form:"path"`
+}
+
+type DownloadSessionService struct {
+	// Name string `form:"name"`
+	// 图片文件夹路径
+	Path string `form:"path"`
+	Email string `form:"email"`
 }
 
 type DownloadNoAuthService struct {
-	ID	string	`form:"id"`
+	ID string `form:"id"`
 }
 
 func (service *DownloadNoAuthService) Download(c *gin.Context) serializer.Response {
@@ -96,11 +108,34 @@ func (service *DownloadNoAuthService) Download(c *gin.Context) serializer.Respon
 		if err != nil {
 			return serializer.Err(e.CodeErrDownload, err.Error(), err)
 		}
-		defer diskFile.Close()
+		// defer diskFile.Close()
 		// 设置头，通知浏览器为下载而不是预览
-		c.Header("Content-Disposition", "attachment; filename=\"" + url.QueryEscape(item.Name) + "\"; filename*=utf-8''" + url.QueryEscape(item.Name))
+		c.Header("Content-Disposition", "attachment; filename=\""+url.QueryEscape(item.Name)+"\"; filename*=utf-8''"+url.QueryEscape(item.Name))
 		c.Header("Content-Type", "application/octet-stream")
-		http.ServeContent(c.Writer, c.Request, item.Name, time.Now(), diskFile)
+		err = filesystem.ServeContent(c.Writer, c.Request, item.Name, time.Now(), diskFile)
+		diskFile.Close()
+		if err != nil {
+			if filesystem.IsUnexpectedError(err) {
+				// 发生了未知错误，说明数据很可能已经损坏。删除临时文件和数据库记录
+				util.Log().Error("error occurred during download. %v", err)
+				filesystem.GlobalFs.Fs.Remove(filepath.Join(item.Path, item.Name))
+				models.DeleteRecordByID(service.ID)
+				return serializer.Err(e.CodeErrDownload, e.ErrDownloadFileNotExist.Error(), e.ErrDownloadFileNotExist)
+			} else {
+				// 客户端主动断开连接，更新数据库信息
+				record, err := models.GetRecordByID(service.ID)
+				if err == nil {
+					record.SetStart(true)
+				}
+			}
+		} else {
+			// 下载完成，删除临时文件和数据库记录
+			// 删除临时文件
+			util.Log().Info("下载成功，删除临时文件, %v, %v", item.Path, item.Name)
+			filesystem.GlobalFs.Fs.Remove(filepath.Join(item.Path, item.Name))
+			// 删除数据库记录
+			models.DeleteRecordByID(service.ID)
+		}
 		return serializer.Response{
 			Code: 0,
 		}
@@ -108,12 +143,65 @@ func (service *DownloadNoAuthService) Download(c *gin.Context) serializer.Respon
 }
 
 // 创建文件下载会话
-func (service *DownloadStaticService) CreateDownloadSession(c *gin.Context) serializer.Response {
-	// 获取url
-	downloadURL := filesystem.GlobalFs.GetDownloadURL(service.Name, service.Path, time.Hour)
+func (service *DownloadSessionService) CreateDownloadSession(c *gin.Context) serializer.Response {
+	// 查看是否已有正在下载的记录
+	/*
+	user, err := models.GetUserByEmail(service.Email)
+	if err != nil {
+		util.Log().Error("获取用户失败, %v", err)
+		return serializer.Response{
+			Code: e.CodeErrDownloadGetUser,
+			Error: e.ErrGetUser.Error(),
+			// Data: downloadURL,
+		}
+	}
+	*/
+	record, err := models.GetRecordByEmail(service.Email)
+
+	if err == nil {
+		// 已存在下载记录，返回旧链接
+		go func() {
+			base := conf.SystemConfig.Host + conf.SystemConfig.Out
+			uri := fmt.Sprintf("/api/v1/file/download_noauth?id=%s", record.ID)
+			url := base + uri
+			mail.SendMail([]string{service.Email}, "download link", url)
+		}()
+		return serializer.Response{
+			Code: 0,
+		}
+	}
+	// 生成临时文件及数据库记录，并发送给目标用户
+	randName := util.RandStringRunes(16)
+	go func() {
+		// 执行水印算法
+		err := exec.ExecPython(conf.SystemConfig.Script, conf.SystemConfig.ImageDir, randName)
+		if err != nil {
+			util.Log().Error("execute script error, %v", err)
+			return
+		}
+		// 生成数据库记录
+		record := models.NewDownloadRecord()
+		record.Email = service.Email
+		record.Start = false
+		record.ID = randName
+		if err = models.DB.Create(&record).Error; err != nil {
+			util.Log().Error("创建下载记录失败, %v", err)
+			return
+		}
+		// 获取url
+		downloadURL := filesystem.GlobalFs.GetDownloadURL(randName, service.Path, time.Minute * 2)
+		mail.SendMail([]string{service.Email}, "download link", downloadURL)
+		time.AfterFunc(time.Minute * 2, func() {
+			util.Log().Info("删除临时文件")
+			// 删除临时文件
+			filesystem.GlobalFs.Fs.Remove(filepath.Join(service.Path, randName + ".zip"))
+			// 删除数据库记录
+			models.DeleteRecordByID(randName)
+		})
+	}()
 	return serializer.Response{
 		Code: 0,
-		Data: downloadURL,
+		// Data: downloadURL,
 	}
 }
 
@@ -125,15 +213,13 @@ func (service *DownloadStaticService) Download(c *gin.Context) serializer.Respon
 	}
 	defer diskFile.Close()
 	// 设置头，通知浏览器为下载而不是预览
-	c.Header("Content-Disposition", "attachment; filename=\"" + url.QueryEscape(service.Name) + "\"; filename*=utf-8''" + url.QueryEscape(service.Name))
+	c.Header("Content-Disposition", "attachment; filename=\""+url.QueryEscape(service.Name)+"\"; filename*=utf-8''"+url.QueryEscape(service.Name))
 	c.Header("Content-Type", "application/octet-stream")
 	http.ServeContent(c.Writer, c.Request, service.Name, time.Now(), diskFile)
-
 	return serializer.Response{
 		Code: 0,
 	}
 }
-
 
 // 下载文件
 func (service *DownloadService) Download(c *gin.Context) serializer.Response {
@@ -147,14 +233,14 @@ func (service *DownloadService) Download(c *gin.Context) serializer.Response {
 		return serializer.Err(e.CodeErrDownload, err.Error(), err)
 	}
 	/*
-	if !fm.Review {
-		return serializer.Err(e.CodeErrUnReviewed, e.ErrFileUnReviewed.Error(), e.ErrFileUnReviewed)
-	}
+		if !fm.Review {
+			return serializer.Err(e.CodeErrUnReviewed, e.ErrFileUnReviewed.Error(), e.ErrFileUnReviewed)
+		}
 	*/
 	defer diskFile.Close()
 
 	// 设置头，通知浏览器为下载而不是预览
-	c.Header("Content-Disposition", "attachment; filename=\"" + url.QueryEscape(service.Name) + "\"; filename*=utf-8''" + url.QueryEscape(service.Name))
+	c.Header("Content-Disposition", "attachment; filename=\""+url.QueryEscape(service.Name)+"\"; filename*=utf-8''"+url.QueryEscape(service.Name))
 	c.Header("Content-Type", "application/octet-stream")
 	http.ServeContent(c.Writer, c.Request, service.Name, fm.UpdatedAt, diskFile)
 	return serializer.Response{
@@ -311,6 +397,3 @@ func (service *CreateDirectoryService) CreateDirectory(c *gin.Context) serialize
 		Data: fileInfo,
 	}
 }
-
-
-

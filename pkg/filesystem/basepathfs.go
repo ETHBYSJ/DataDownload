@@ -10,7 +10,7 @@ import (
 
 type BasePathFs struct {
 	source Fs
-	path string
+	path   string
 }
 
 type BasePathFile struct {
@@ -26,7 +26,6 @@ func (f *BasePathFile) Name() string {
 func NewBasePathFs(source Fs, path string) Fs {
 	return &BasePathFs{source: source, path: path}
 }
-
 
 func (b *BasePathFs) RealPath(name string) (path string, err error) {
 	if err := validateBasePathName(name); err != nil {
@@ -183,5 +182,3 @@ func (b *BasePathFs) ReadlinkIfPossible(name string) (string, error) {
 	}
 	return "", &os.PathError{Op: "readlink", Path: name, Err: ErrNoReadlink}
 }
-
-

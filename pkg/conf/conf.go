@@ -7,23 +7,25 @@ import (
 )
 
 type database struct {
-	Type 		string
-	User 		string
-	Password 	string
-	Host 		string
-	Name 		string
+	Type        string
+	User        string
+	Password    string
+	Host        string
+	Name        string
 	TablePrefix string
-	Port 		int
+	Port        int
 }
 
 type system struct {
-	Host 			string
-	Debug 			bool
-	Listen			string `validate:"required"`
-	Out 			string `validate:"required"`
-	SessionSecret 	string
-	HashIDSalt		string
-	StorageRoot		string
+	Host          string
+	Debug         bool
+	Listen        string `validate:"required"`
+	Out           string `validate:"required"`
+	SessionSecret string
+	HashIDSalt    string
+	StorageRoot   string
+	Script 		  string
+	ImageDir 	  string
 }
 
 var cfg *ini.File
@@ -37,7 +39,7 @@ func Init(path string) {
 
 	sections := map[string]interface{}{
 		"database": DatabaseConfig,
-		"system":	SystemConfig,
+		"system":   SystemConfig,
 	}
 	for sectionName, sectionStruct := range sections {
 		err = mapSection(sectionName, sectionStruct)

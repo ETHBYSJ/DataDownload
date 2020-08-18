@@ -10,6 +10,7 @@ import (
 func AddPolicy(enforcer *casbin.Enforcer, uid string, resource string, method string) bool {
 	return enforcer.AddPolicy(uid, resource, method)
 }
+
 // 取消授权
 func RemovePolicy(enforcer *casbin.Enforcer, uid string, resource string, method string) bool {
 	return enforcer.RemovePolicy(uid, resource, method)
@@ -19,4 +20,3 @@ func RemovePolicy(enforcer *casbin.Enforcer, uid string, resource string, method
 func Enforce(enforcer *casbin.Enforcer, uid string, resource string, method string) (bool, error) {
 	return enforcer.EnforceSafe(uid, resource, method)
 }
-

@@ -21,7 +21,7 @@ func Session(secret string) gin.HandlerFunc {
 
 func CSRFInit() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		util.SetSession(c, map[string]interface{}{"CSRF":true})
+		util.SetSession(c, map[string]interface{}{"CSRF": true})
 		c.Next()
 	}
 }
@@ -36,4 +36,3 @@ func CSRFCheck() gin.HandlerFunc {
 		c.Abort()
 	}
 }
-

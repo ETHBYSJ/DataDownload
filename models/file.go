@@ -9,19 +9,19 @@ import (
 
 type File struct {
 	gorm.Model
-	Name		string 	`gorm:"type:varchar(255) not null;unique_index:idx"`
-	IsDir 		bool 	`gorm:"type:tinyint(1) not null;default:0"`
-	Path 		string 	`gorm:"type:varchar(255);unique_index:idx"`
-	OwnerID		uint
-	Owner 		User	`gorm:"foreignkey:OwnerID"`
+	Name    string `gorm:"type:varchar(255) not null;unique_index:idx"`
+	IsDir   bool   `gorm:"type:tinyint(1) not null;default:0"`
+	Path    string `gorm:"type:varchar(255);unique_index:idx"`
+	OwnerID uint
+	Owner   User `gorm:"foreignkey:OwnerID"`
 	// 0代表私有 1代表公开
-	Share		bool 	`gorm:"type:tinyint(1) not null;default:0"`
-	Size 		int64
+	Share bool `gorm:"type:tinyint(1) not null;default:0"`
+	Size  int64
 	// 是否通过审核
-	Review  	bool 	`gorm:"type:tinyint(1) not null;default:0"`
-	MD5 		string 	`gorm:"type:varchar(255);"`
-	Uploaded 	bool 	`gorm:"type:tinyint(1) not null;default:0"`
-	Merge 		bool 	`gorm:"type:tinyint(1) not null;default:0"`
+	Review   bool   `gorm:"type:tinyint(1) not null;default:0"`
+	MD5      string `gorm:"type:varchar(255);"`
+	Uploaded bool   `gorm:"type:tinyint(1) not null;default:0"`
+	Merge    bool   `gorm:"type:tinyint(1) not null;default:0"`
 }
 
 func NewFile() *File {
@@ -34,13 +34,13 @@ func AdminGetFiles(page int, pageSize int, keyword string, category int) ([]*Fil
 	var err error
 	if category == 0 {
 		// 未审核
-		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ? AND merge = ?","%" + keyword + "%",  0, 0, 1).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ? AND merge = ?", "%"+keyword+"%", 0, 0, 1).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
 	} else if category == 1 {
 		// 已审核
-		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ? AND merge = ?", "%" + keyword + "%", 1, 0, 1).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ? AND merge = ?", "%"+keyword+"%", 1, 0, 1).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
 	} else if category == 2 {
 		// 全部
-		err = DB.Model(&File{}).Where("name LIKE ? AND is_dir = ? AND merge = ?", "%" + keyword + "%", 0, 1).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND is_dir = ? AND merge = ?", "%"+keyword+"%", 0, 1).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
 	}
 
 	if err != nil {
@@ -49,13 +49,13 @@ func AdminGetFiles(page int, pageSize int, keyword string, category int) ([]*Fil
 	var count uint64
 	if category == 0 {
 		// 未审核
-		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ? AND merge = ?", "%" + keyword + "%", 0, 0, 1).Count(&count).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ? AND merge = ?", "%"+keyword+"%", 0, 0, 1).Count(&count).Error
 	} else if category == 1 {
 		// 已审核
-		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ? AND merge = ?", "%" + keyword + "%", 1, 0, 1).Count(&count).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND is_dir = ? AND merge = ?", "%"+keyword+"%", 1, 0, 1).Count(&count).Error
 	} else if category == 2 {
 		// 全部
-		err = DB.Model(&File{}).Where("name LIKE ? AND is_dir = ? AND merge = ?", "%" + keyword + "%", 0, 1).Count(&count).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND is_dir = ? AND merge = ?", "%"+keyword+"%", 0, 1).Count(&count).Error
 	}
 	if err != nil {
 		return []*File{}, 0, err
@@ -63,16 +63,14 @@ func AdminGetFiles(page int, pageSize int, keyword string, category int) ([]*Fil
 	return files, count, nil
 }
 
-
-
 // 根据路径名获取文件
 func GetFileByPath(path string) (*File, error) {
 	if path == "/" {
 		util.Log().Panic("试图获取根目录在数据库中的记录")
 		return nil, e.ErrTryToGetRoot
 	}
-	if path[len(path) - 1] == '/' {
-		path = path[:len(path) - 1]
+	if path[len(path)-1] == '/' {
+		path = path[:len(path)-1]
 	}
 	n := ""
 	p := ""
@@ -84,7 +82,7 @@ func GetFileByPath(path string) (*File, error) {
 		// ex: /test/test1
 		p = path[:index]
 	}
-	n = path[index + 1:]
+	n = path[index+1:]
 	util.Log().Info("path = %v, name = %v", p, n)
 
 	return GetFileByNameAndPath(n, p)
@@ -124,7 +122,6 @@ func DeleteFileByNameAndPath(name string, path string) error {
 	result := DB.Unscoped().Where("name = ? AND path = ?", name, path).Delete(&File{})
 	return result.Error
 }
-
 
 // 重命名文件
 func (file *File) Rename(newName string) error {
@@ -180,5 +177,3 @@ func (file *File) GetOwner() *User {
 func (file *File) GetShare() bool {
 	return file.Share
 }
-
-

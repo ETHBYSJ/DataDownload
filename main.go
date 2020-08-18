@@ -13,10 +13,10 @@ func init() {
 
 func main() {
 	/*
-	bytes, err := util.ReadAll("conf/rbac_model.conf")
-	if err == nil {
-		fmt.Println(string(bytes))
-	}
+		bytes, err := util.ReadAll("conf/rbac_model.conf")
+		if err == nil {
+			fmt.Println(string(bytes))
+		}
 	*/
 	api := routers.InitRouter()
 	util.Log().Info("开始监听 %s", conf.SystemConfig.Listen)

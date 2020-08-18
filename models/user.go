@@ -10,19 +10,18 @@ import (
 	"strings"
 )
 
-
 type User struct {
 	gorm.Model
-	Email 		string 	`gorm:"type:varchar(100);unique_index"`
-	FirstName 	string 	`gorm:"type:varchar(100) not null"`
-	LastName 	string 	`gorm:"type:varchar(100) not null"`
-	PhoneNumber string 	`gorm:"type:varchar(100) not null"`
-	School 		string 	`gorm:"type:varchar(100) not null"`
-	Role 		string 	`gorm:"type:varchar(100) not null"`
-	Password	string 	`json:"-"`
-	Status 		bool 	`gorm:"type:tinyint(1) not null;default:1"`
-	UserType	string 	`gorm:"type:varchar(8) not null;default:'User'"`
-	Language 	string 	`gorm:"type:varchar(8) not null;default:'zh-CN'"`
+	Email       string `gorm:"type:varchar(100);unique_index"`
+	FirstName   string `gorm:"type:varchar(100) not null"`
+	LastName    string `gorm:"type:varchar(100) not null"`
+	PhoneNumber string `gorm:"type:varchar(100) not null"`
+	School      string `gorm:"type:varchar(100) not null"`
+	Role        string `gorm:"type:varchar(100) not null"`
+	Password    string `json:"-"`
+	Status      bool   `gorm:"type:tinyint(1) not null;default:1"`
+	UserType    string `gorm:"type:varchar(8) not null;default:'User'"`
+	Language    string `gorm:"type:varchar(8) not null;default:'zh-CN'"`
 }
 
 func NewUser() *User {
@@ -35,13 +34,13 @@ func GetMyFiles(uid uint, page int, pageSize int, keyword string, category int) 
 	var err error
 	if category == 0 {
 		// 未审核
-		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND owner_id = ? AND is_dir = ?","%" + keyword + "%",  0, uid, 0).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND owner_id = ? AND is_dir = ?", "%"+keyword+"%", 0, uid, 0).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
 	} else if category == 1 {
 		// 已审核
-		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND owner_id = ? AND is_dir = ?", "%" + keyword + "%", 1, uid, 0).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND owner_id = ? AND is_dir = ?", "%"+keyword+"%", 1, uid, 0).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
 	} else if category == 2 {
 		// 全部
-		err = DB.Model(&File{}).Where("name LIKE ? AND owner_id = ? AND is_dir = ?", "%" + keyword + "%", uid, 0).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND owner_id = ? AND is_dir = ?", "%"+keyword+"%", uid, 0).Order("updated_at desc").Limit(pageSize).Offset((page - 1) * pageSize).Find(&files).Error
 	}
 
 	if err != nil {
@@ -50,13 +49,13 @@ func GetMyFiles(uid uint, page int, pageSize int, keyword string, category int) 
 	var count uint64
 	if category == 0 {
 		// 未审核
-		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND owner_id = ? AND is_dir = ?", "%" + keyword + "%", 0, uid, 0).Count(&count).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND owner_id = ? AND is_dir = ?", "%"+keyword+"%", 0, uid, 0).Count(&count).Error
 	} else if category == 1 {
 		// 已审核
-		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND owner_id = ? AND is_dir = ?", "%" + keyword + "%", 1, uid, 0).Count(&count).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND review = ? AND owner_id = ? AND is_dir = ?", "%"+keyword+"%", 1, uid, 0).Count(&count).Error
 	} else if category == 2 {
 		// 全部
-		err = DB.Model(&File{}).Where("name LIKE ? AND owner_id = ? AND is_dir = ?", "%" + keyword + "%", uid, 0).Count(&count).Error
+		err = DB.Model(&File{}).Where("name LIKE ? AND owner_id = ? AND is_dir = ?", "%"+keyword+"%", uid, 0).Count(&count).Error
 	}
 	if err != nil {
 		return []*File{}, 0, err
@@ -112,7 +111,6 @@ func GetUserByEmail(email string) (*User, error) {
 	return &user, result.Error
 }
 
-
 // 设定用户状态
 func (user *User) SetStatus(status bool) error {
 	if status {
@@ -153,12 +151,3 @@ func (user *User) CheckPassword(password string) (bool, error) {
 	}
 	return bs == passwordStore[1], nil
 }
-
-
-
-
-
-
-
-
-

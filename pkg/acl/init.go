@@ -23,24 +23,24 @@ func Init(path string) {
 		util.Log().Panic("初始化权限配置失败, %s", err)
 	}
 	/*
-	enforcer.AddPolicy("alice", "/foo", "GET")
-	ok, err := enforcer.EnforceSafe("alice", "/foo", "GET")
-	if !ok {
-		util.Log().Warning("error: %s", err)
-	} else {
-		util.Log().Info("success")
-	}
-	enforcer.RemovePolicy("alice", "/foo", "GET")
-	ok, err = enforcer.EnforceSafe("alice", "/foo", "GET")
-	if !ok {
-		util.Log().Warning("error: %s", err)
-	} else {
-		util.Log().Info("success")
-	}
-	err = enforcer.SavePolicy()
-	if err != nil {
-		util.Log().Warning("save policy error, %s", err)
-	}
+		enforcer.AddPolicy("alice", "/foo", "GET")
+		ok, err := enforcer.EnforceSafe("alice", "/foo", "GET")
+		if !ok {
+			util.Log().Warning("error: %s", err)
+		} else {
+			util.Log().Info("success")
+		}
+		enforcer.RemovePolicy("alice", "/foo", "GET")
+		ok, err = enforcer.EnforceSafe("alice", "/foo", "GET")
+		if !ok {
+			util.Log().Warning("error: %s", err)
+		} else {
+			util.Log().Info("success")
+		}
+		err = enforcer.SavePolicy()
+		if err != nil {
+			util.Log().Warning("save policy error, %s", err)
+		}
 	*/
 	Enforcer = enforcer
 }

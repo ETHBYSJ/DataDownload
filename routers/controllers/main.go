@@ -19,5 +19,3 @@ func ErrorResponse(err error) serializer.Response {
 	}
 	return serializer.ParamErr("参数错误", err)
 }
-
-

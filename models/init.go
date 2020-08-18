@@ -8,13 +8,14 @@ import (
 	"go-file-manager/pkg/util"
 	"time"
 )
+
 // 全局变量
 var DB *gorm.DB
 
 func Init() {
 	util.Log().Info("初始化数据库连接")
 	var (
-		db *gorm.DB
+		db  *gorm.DB
 		err error
 	)
 	db, err = gorm.Open(conf.DatabaseConfig.Type, fmt.Sprintf("%s:%s@(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
@@ -24,9 +25,9 @@ func Init() {
 		conf.DatabaseConfig.Port,
 		conf.DatabaseConfig.Name))
 	/*
-	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
-		return conf.DatabaseConfig.TablePrefix + defaultTableName
-	}
+		gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
+			return conf.DatabaseConfig.TablePrefix + defaultTableName
+		}
 	*/
 	if conf.SystemConfig.Debug {
 		// db.LogMode(true)

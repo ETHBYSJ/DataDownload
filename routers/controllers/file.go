@@ -20,7 +20,6 @@ func DownloadNoAuth(c *gin.Context) {
 	}
 }
 
-
 // 下载文件，静态路径
 func DownloadStatic(c *gin.Context) {
 	var service file.DownloadStaticService
@@ -36,7 +35,7 @@ func DownloadStatic(c *gin.Context) {
 
 // 创建文件下载会话
 func CreateDownloadSession(c *gin.Context) {
-	var service file.DownloadStaticService
+	var service file.DownloadSessionService
 	if err := c.BindQuery(&service); err == nil {
 		res := service.CreateDownloadSession(c)
 		c.JSON(200, res)
@@ -80,7 +79,6 @@ func SetShare(c *gin.Context) {
 		c.JSON(200, ErrorResponse(err))
 	}
 }
-
 
 // 重命名
 func Rename(c *gin.Context) {
@@ -128,8 +126,6 @@ func UploadChunk(c *gin.Context) {
 	}
 }
 
-
-
 // 删除文件
 func Delete(c *gin.Context) {
 	var service file.DeleteService
@@ -176,7 +172,7 @@ func ListDirectory(c *gin.Context) {
 
 func TestController(c *gin.Context) {
 	c.JSON(200, gin.H{
-		"code": 200,
+		"code":    200,
 		"success": true,
 	})
 }

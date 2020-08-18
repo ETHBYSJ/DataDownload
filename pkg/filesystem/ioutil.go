@@ -6,7 +6,6 @@ import (
 	"os"
 )
 
-
 func ReadDir(fs Fs, dirname string) ([]os.FileInfo, error) {
 	f, err := fs.Open(dirname)
 	if err != nil {
@@ -32,7 +31,7 @@ func ReadFile(fs Fs, filename string) ([]byte, error) {
 			n = size
 		}
 	}
-	return readAll(f, n + bytes.MinRead)
+	return readAll(f, n+bytes.MinRead)
 }
 
 func readAll(r io.Reader, capacity int64) (b []byte, err error) {
@@ -83,4 +82,3 @@ func AppendFile(fs Fs, filename string, data []byte, perm os.FileMode) error {
 	}
 	return err
 }
-

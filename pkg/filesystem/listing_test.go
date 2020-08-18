@@ -17,6 +17,7 @@ func TestInit(t *testing.T) {
 	l := Listing{}
 	fmt.Print(l)
 }
+
 /*
 func TestWin10Sort(t *testing.T) {
 	asserts := assert.New(t)

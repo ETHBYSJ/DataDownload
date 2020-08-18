@@ -33,22 +33,3 @@ func (fs *FileSystem) validateLegalName(name string) bool {
 func (fs *FileSystem) ValidateExtension(fileName string) bool {
 	return true
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

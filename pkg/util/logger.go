@@ -13,28 +13,29 @@ const (
 	LevelInformational
 	LevelDebug
 )
+
 var GlobalLogger *Logger
 var Level = LevelDebug
 
 type Logger struct {
 	level int
-	mu sync.Mutex
+	mu    sync.Mutex
 }
 
-var colors = map[string]func(a...interface{}) string {
+var colors = map[string]func(a ...interface{}) string{
 	"Warning": color.New(color.FgYellow).Add(color.Bold).SprintFunc(),
-	"Panic": color.New(color.BgRed).Add(color.Bold).SprintFunc(),
-	"Error": color.New(color.FgRed).Add(color.Bold).SprintFunc(),
-	"Info": color.New(color.FgCyan).Add(color.Bold).SprintFunc(),
-	"Debug": color.New(color.FgWhite).Add(color.Bold).SprintFunc(),
+	"Panic":   color.New(color.BgRed).Add(color.Bold).SprintFunc(),
+	"Error":   color.New(color.FgRed).Add(color.Bold).SprintFunc(),
+	"Info":    color.New(color.FgCyan).Add(color.Bold).SprintFunc(),
+	"Debug":   color.New(color.FgWhite).Add(color.Bold).SprintFunc(),
 }
 
-var spaces = map[string]string {
+var spaces = map[string]string{
 	"Warning": "",
-	"Panic": "  ",
-	"Error": "  ",
-	"Info": "   ",
-	"Debug": "  ",
+	"Panic":   "  ",
+	"Error":   "  ",
+	"Info":    "   ",
+	"Debug":   "  ",
 }
 
 func (ll *Logger) Println(prefix string, msg string) {
@@ -44,7 +45,7 @@ func (ll *Logger) Println(prefix string, msg string) {
 
 	_, _ = c.Printf(
 		"%s%s %s %s\n",
-		colors[prefix]("[" + prefix + "]"),
+		colors[prefix]("["+prefix+"]"),
 		spaces[prefix],
 		time.Now().Format("2006-01-02 15:04:05"),
 		msg,
@@ -104,7 +105,7 @@ func BuildLogger(level string) {
 	case "debug":
 		intLevel = LevelDebug
 	}
-	l := Logger {
+	l := Logger{
 		level: intLevel,
 	}
 	GlobalLogger = &l
@@ -112,21 +113,10 @@ func BuildLogger(level string) {
 
 func Log() *Logger {
 	if GlobalLogger == nil {
-		l := Logger {
+		l := Logger{
 			level: Level,
 		}
 		GlobalLogger = &l
 	}
 	return GlobalLogger
 }
-
-
-
-
-
-
-
-
-
-
-

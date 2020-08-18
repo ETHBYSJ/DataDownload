@@ -8,15 +8,15 @@ import (
 )
 
 type AdminGetFilesService struct {
-	Page		int		`form:"page" json:"page"`
-	PageSize	int		`form:"pageSize" json:"pageSize"`
-	Keyword		string	`form:"keyword" json:"keyword"`
-	Category	int 	`form:"category" json:"category"`
+	Page     int    `form:"page" json:"page"`
+	PageSize int    `form:"pageSize" json:"pageSize"`
+	Keyword  string `form:"keyword" json:"keyword"`
+	Category int    `form:"category" json:"category"`
 }
 
 type AdminReviewService struct {
-	ID		uint	`form:"id" json:"id"`
-	Review 	bool 	`form:"review" json:"review"`
+	ID     uint `form:"id" json:"id"`
+	Review bool `form:"review" json:"review"`
 }
 
 // 修改审核状态

@@ -5,11 +5,11 @@ var (
 	ByNameDictionaryStyle = "dic"
 	// 自然风格
 	ByNameNaturalStyle = "natural"
-	BySize = "size"
-	ByModified = "modified"
+	BySize             = "size"
+	ByModified         = "modified"
 )
 
 type Sorting struct {
-	By 	string	`json:"by"`
-	Asc bool	`json:"asc"`
+	By  string `json:"by"`
+	Asc bool   `json:"asc"`
 }

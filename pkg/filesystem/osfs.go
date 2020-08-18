@@ -15,7 +15,7 @@ func (o *OsFs) RealPath(name string) (string, error) {
 	return name, nil
 }
 
-func (o *OsFs) Name() string {return "OsFs"}
+func (o *OsFs) Name() string { return "OsFs" }
 
 func (o *OsFs) Create(name string) (File, error) {
 	f, e := os.Create(name)
@@ -85,6 +85,3 @@ func (o *OsFs) SymlinkIfPossible(oldname, newname string) error {
 func (o *OsFs) ReadlinkIfPossible(name string) (string, error) {
 	return os.Readlink(name)
 }
-
-
-

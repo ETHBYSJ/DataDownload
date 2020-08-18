@@ -21,5 +21,3 @@ type LinkReader interface {
 }
 
 var ErrNoReadlink = errors.New("readlink not supported")
-
-

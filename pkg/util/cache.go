@@ -11,8 +11,8 @@ import (
 // cache2go https://github.com/muesli/cache2go
 type Item struct {
 	sync.RWMutex
-	key 	interface{}
-	data 	interface{}
+	key  interface{}
+	data interface{}
 	// cache duration
 	duration time.Duration
 	// create time
@@ -38,6 +38,7 @@ func NewItem(key interface{}, duration time.Duration, data interface{}) *Item {
 		data:           data,
 	}
 }
+
 // keep alive
 func (item *Item) KeepAlive() {
 	item.Lock()
@@ -88,7 +89,7 @@ type Table struct {
 	cleanupTimer *time.Timer
 	// cleanup interval
 	cleanupInterval time.Duration
-	loadData func(key interface{}, args ...interface{}) *Item
+	loadData        func(key interface{}, args ...interface{}) *Item
 	// callback after adding
 	addedCallback func(item *Item)
 	// callback after deleting
@@ -165,7 +166,7 @@ func (table *Table) checkExpire() {
 			}
 		} else {
 			// find the most possible expire item.
-			if smallestDuration == 0 || duration - now.Sub(accessTime) < smallestDuration {
+			if smallestDuration == 0 || duration-now.Sub(accessTime) < smallestDuration {
 				smallestDuration = duration - now.Sub(accessTime)
 			}
 		}
@@ -362,10 +363,3 @@ func NewTable() *Table {
 		items: make(map[interface{}]*Item),
 	}
 }
-
-
-
-
-
-
-

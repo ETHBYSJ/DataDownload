@@ -16,6 +16,7 @@ func TestCreate(t *testing.T) {
 	_, e := osFs.Create(baseDir + string(filepath.Separator) + "test.txt")
 	asserts.NoError(e)
 }
+
 /*
 func TestOsFs_Mkdir(t *testing.T) {
 	asserts := assert.New(t)
@@ -32,4 +33,3 @@ func TestOsFs_Rename(t *testing.T) {
 	e := osFs.Rename("D:\\storage\\a0\\test1.txt", "D:\\storage\\a0\\test.txt")
 	asserts.NoError(e)
 }
-

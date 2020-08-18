@@ -29,7 +29,7 @@ type File interface {
 
 	Name() string
 	Readdir(count int) ([]os.FileInfo, error)
-	Readdirnames(n int) ([] string, error)
+	Readdirnames(n int) ([]string, error)
 	Stat() (os.FileInfo, error)
 	Sync() error
 	Truncate(size int64) error
@@ -55,13 +55,13 @@ type Fs interface {
 }
 
 type CheckInfo struct {
-	SkipUpload  	bool   `json:"skipUpload"`
-	Uploaded 		[]int  `json:"uploaded"`
-	NeedMerge 		bool   `json:"needMerge"`
-	Identifier 		string `json:"identifier"`
-	FileName 		string `json:"filename"`
-	RelativePath 	string `json:"relativePath"`
-	TotalChunks 	int    `json:"totalChunks"`
+	SkipUpload   bool   `json:"skipUpload"`
+	Uploaded     []int  `json:"uploaded"`
+	NeedMerge    bool   `json:"needMerge"`
+	Identifier   string `json:"identifier"`
+	FileName     string `json:"filename"`
+	RelativePath string `json:"relativePath"`
+	TotalChunks  int    `json:"totalChunks"`
 }
 
 // 实际使用的文件系统结构
@@ -78,8 +78,8 @@ type FileSystem struct {
 }
 
 type CacheFileItem struct {
-	Name	string
-	Path 	string
+	Path string
+	Name string
 }
 
 func (fs *FileSystem) CheckDownload(id string) (*CacheFileItem, bool) {
@@ -97,13 +97,13 @@ func (fs *FileSystem) CheckDownload(id string) (*CacheFileItem, bool) {
 }
 
 // 生成下载URL
-func (fs *FileSystem) GetDownloadURL(name string, path string, duration time.Duration) string {
+func (fs *FileSystem) GetDownloadURL(randName string, path string, duration time.Duration) string {
 	// 生成
-	downloadSessionID := util.RandStringRunes(16)
+	// downloadSessionID := util.RandStringRunes(16)
 	base := conf.SystemConfig.Host + conf.SystemConfig.Out
-	uri := fmt.Sprintf("/api/v1/file/download_noauth?id=%s", downloadSessionID)
+	uri := fmt.Sprintf("/api/v1/file/download_noauth?id=%s", randName)
 	url := base + uri
-	fs.table.Add("download_" + downloadSessionID, duration, CacheFileItem{Name: name, Path: path})
+	fs.table.Add("download_"+randName, duration, CacheFileItem{Path: path, Name: randName + ".zip"})
 	return url
 }
 
@@ -182,7 +182,7 @@ func (fs *FileSystem) MergeChunk(name string, path string, user *models.User, md
 	} else {
 		util.Log().Info(" merge path = %s\n", path)
 		last := strings.LastIndex(path, "/")
-		n := path[last + 1:]
+		n := path[last+1:]
 		p := path[:last]
 		if p == "" {
 			p = "/"
@@ -281,7 +281,7 @@ func (fs *FileSystem) UploadChunk(name string, path string, user *models.User, m
 	} else {
 		util.Log().Info("upload path = %s\n", path)
 		last := strings.LastIndex(path, "/")
-		n := path[last + 1:]
+		n := path[last+1:]
 		p := path[:last]
 		if p == "" {
 			p = "/"
@@ -348,7 +348,7 @@ func (fs *FileSystem) CheckChunk(name string, path string, user *models.User, md
 
 	} else {
 		last := strings.LastIndex(path, "/")
-		n := path[last + 1:]
+		n := path[last+1:]
 		p := path[:last]
 		if p == "" {
 			p = "/"
@@ -455,8 +455,6 @@ func (fs *FileSystem) RenameAtomic(oldName, newName, dirPath string) error {
 
 }
 
-
-
 // 删除文件
 func (fs *FileSystem) Delete(name string, path string) error {
 	err := fs.Fs.Remove(filepath.Join(path, name))
@@ -478,13 +476,13 @@ func (fs *FileSystem) CreateDirectory(user *models.User, name, dirPath string) (
 	}
 	// 数据库操作
 	newFolder := models.File{
-		Name: name,
-		Path: dirPath,
-		IsDir: true,
-		Owner: *user,
+		Name:    name,
+		Path:    dirPath,
+		IsDir:   true,
+		Owner:   *user,
 		OwnerID: user.ID,
-		Review: true,	// 文件夹默认不需要审核
-		Share: true,  // 文件夹默认是共享的
+		Review:  true, // 文件夹默认不需要审核
+		Share:   true, // 文件夹默认是共享的
 	}
 	id, err := newFolder.Create()
 	if err != nil {
@@ -497,14 +495,14 @@ func (fs *FileSystem) CreateDirectory(user *models.User, name, dirPath string) (
 		return nil, err
 	}
 	file := FileInfo{
-		ID: id,
-		Name: name,
-		Path: dirPath,
-		IsDir: true,
+		ID:      id,
+		Name:    name,
+		Path:    dirPath,
+		IsDir:   true,
 		ModTime: newFolder.CreatedAt,
-		Review: true,
+		Review:  true,
 		OwnerID: user.ID,
-		Share: true,
+		Share:   true,
 	}
 	return &file, nil
 }
@@ -516,10 +514,10 @@ func (fs *FileSystem) ListByKeyword(sorting Sorting, dirPath string, keyword str
 		return nil, err
 	}
 	listing := &Listing{
-		Items: []*FileInfo{},
-		NumDirs: 0,
+		Items:    []*FileInfo{},
+		NumDirs:  0,
 		NumFiles: 0,
-		Sorting: sorting,
+		Sorting:  sorting,
 	}
 	for _, f := range dir {
 		name := f.Name()
@@ -527,10 +525,10 @@ func (fs *FileSystem) ListByKeyword(sorting Sorting, dirPath string, keyword str
 			continue
 		}
 		file := &FileInfo{
-			Name: name,
-			Path: dirPath,
-			Size: f.Size(),
-			IsDir: f.IsDir(),
+			Name:    name,
+			Path:    dirPath,
+			Size:    f.Size(),
+			IsDir:   f.IsDir(),
 			ModTime: f.ModTime(),
 		}
 		// 查数据库获取唯一ID
@@ -563,18 +561,18 @@ func (fs *FileSystem) List(sorting Sorting, dirPath string) (*Listing, error) {
 		return nil, err
 	}
 	listing := &Listing{
-		Items: []*FileInfo{},
-		NumDirs: 0,
+		Items:    []*FileInfo{},
+		NumDirs:  0,
 		NumFiles: 0,
-		Sorting: sorting,
+		Sorting:  sorting,
 	}
 	for _, f := range dir {
 		name := f.Name()
 		file := &FileInfo{
-			Name: name,
-			Path: dirPath,
-			Size: f.Size(),
-			IsDir: f.IsDir(),
+			Name:    name,
+			Path:    dirPath,
+			Size:    f.Size(),
+			IsDir:   f.IsDir(),
 			ModTime: f.ModTime(),
 		}
 		// 查数据库获取唯一ID
@@ -599,5 +597,3 @@ func (fs *FileSystem) List(sorting Sorting, dirPath string) (*Listing, error) {
 	listing.ApplySort()
 	return listing, nil
 }
-
-

@@ -8,7 +8,6 @@ import (
 	"go-file-manager/pkg/util"
 )
 
-
 func CurrentUser(c *gin.Context) *models.User {
 	if user, _ := c.Get("user"); user != nil {
 		if u, ok := user.(*models.User); ok {
@@ -23,15 +22,14 @@ type UserLanguageService struct {
 }
 
 type UserLogoutService struct {
-
 }
 
 type MyFilesService struct {
-	UID 		uint 	`form:"uid" json:"uid"`
-	Page 		int 	`form:"page" json:"page"`
-	PageSize	int		`form:"pageSize" json:"pageSize"`
-	Keyword 	string 	`form:"keyword" json:"keyword"`
-	Category 	int 	`form:"category" json:"category"`
+	UID      uint   `form:"uid" json:"uid"`
+	Page     int    `form:"page" json:"page"`
+	PageSize int    `form:"pageSize" json:"pageSize"`
+	Keyword  string `form:"keyword" json:"keyword"`
+	Category int    `form:"category" json:"category"`
 }
 
 // 我的文件

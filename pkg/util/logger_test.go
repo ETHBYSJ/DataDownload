@@ -33,7 +33,7 @@ func TestLog(t *testing.T) {
 
 func TestLogger_Debug(t *testing.T) {
 	asserts := assert.New(t)
-	l := Logger {
+	l := Logger{
 		level: LevelDebug,
 	}
 	asserts.NotPanics(func() {
@@ -47,7 +47,7 @@ func TestLogger_Debug(t *testing.T) {
 
 func TestLogger_Info(t *testing.T) {
 	asserts := assert.New(t)
-	l := Logger {
+	l := Logger{
 		level: LevelDebug,
 	}
 	asserts.NotPanics(func() {
@@ -60,7 +60,7 @@ func TestLogger_Info(t *testing.T) {
 }
 func TestLogger_Warning(t *testing.T) {
 	asserts := assert.New(t)
-	l := Logger {
+	l := Logger{
 		level: LevelDebug,
 	}
 	asserts.NotPanics(func() {
@@ -73,7 +73,7 @@ func TestLogger_Warning(t *testing.T) {
 }
 func TestLogger_Error(t *testing.T) {
 	asserts := assert.New(t)
-	l := Logger {
+	l := Logger{
 		level: LevelDebug,
 	}
 	asserts.NotPanics(func() {
@@ -86,7 +86,7 @@ func TestLogger_Error(t *testing.T) {
 }
 func TestLogger_Panic(t *testing.T) {
 	asserts := assert.New(t)
-	l := Logger {
+	l := Logger{
 		level: LevelDebug,
 	}
 	asserts.Panics(func() {

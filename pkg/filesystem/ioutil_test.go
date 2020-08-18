@@ -12,7 +12,7 @@ func TestSubstr(t *testing.T) {
 	asserts := assert.New(t)
 	s := "/test"
 	last := strings.LastIndex(s, "/")
-	n := s[last + 1:]
+	n := s[last+1:]
 	p := s[:last]
 	if p == "" {
 		p = "/"
@@ -39,4 +39,3 @@ func TestFilePath(t *testing.T) {
 	newPath := strings.ReplaceAll(filepath.Join(path, name), "\\", "/")
 	asserts.True(newPath == "/test/a.txt")
 }
-

@@ -12,7 +12,7 @@ func migration() {
 	if conf.DatabaseConfig.Type == "mysql" {
 		DB = DB.Set("gorm:table_options", "ENGINE=InnoDB")
 	}
-	DB.AutoMigrate(&User{}, &File{})
+	DB.AutoMigrate(&User{}, &File{}, &DownloadRecord{})
 	addDefaultUser()
 
 	util.Log().Info("数据库初始化结束")

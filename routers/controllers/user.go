@@ -27,6 +27,7 @@ func UserLogin(c *gin.Context) {
 		c.JSON(200, ErrorResponse(err))
 	}
 }
+
 // 用户注册
 func UserRegister(c *gin.Context) {
 	var service user.UserRegisterService
@@ -63,5 +64,3 @@ func LanguageSet(c *gin.Context) {
 		c.JSON(200, ErrorResponse(err))
 	}
 }
-
-

@@ -58,4 +58,3 @@ func AdminRequired() gin.HandlerFunc {
 		c.Abort()
 	}
 }
-

@@ -7,12 +7,11 @@ import (
 )
 
 type Listing struct {
-	Items []*FileInfo		`json:"items"`
-	NumDirs int				`json:"numDirs"`
-	NumFiles int			`json:"numFiles"`
-	Sorting Sorting			`json:"sorting"`
+	Items    []*FileInfo `json:"items"`
+	NumDirs  int         `json:"numDirs"`
+	NumFiles int         `json:"numFiles"`
+	Sorting  Sorting     `json:"sorting"`
 }
-
 
 func (l Listing) ApplySort() {
 	if !l.Sorting.Asc {
@@ -55,7 +54,6 @@ func digits(s string) int {
 	}
 	return len(s)
 }
-
 
 // 寻找公共前缀，不包含数字
 func commonPrefix(a, b string) int {
@@ -112,7 +110,6 @@ type byNameNatural Listing
 type bySize Listing
 type byModified Listing
 
-
 // 排序时，文件夹在前
 
 // 通过文件名比较
@@ -123,6 +120,7 @@ func (l byNameDictionary) Len() int {
 func (l byNameDictionary) Swap(i, j int) {
 	l.Items[i], l.Items[j] = l.Items[j], l.Items[i]
 }
+
 // 字典序
 func (l byNameDictionary) Less(i, j int) bool {
 	if l.Items[i].IsDir && !l.Items[j].IsDir {
@@ -154,7 +152,6 @@ func (l byNameNatural) Less(i, j int) bool {
 	// return Less(l.Items[i].Name, l.Items[j].Name)
 }
 
-
 // 通过文件大小比较
 func (l bySize) Len() int {
 	return len(l.Items)
@@ -165,6 +162,7 @@ func (l bySize) Swap(i, j int) {
 }
 
 const directoryOffset = -1 << 31
+
 func (l bySize) Less(i, j int) bool {
 	if l.Items[i].IsDir && !l.Items[j].IsDir {
 		return true
@@ -181,7 +179,6 @@ func (l bySize) Less(i, j int) bool {
 	}
 	return iSize < jSize
 }
-
 
 func (l byModified) Len() int {
 	return len(l.Items)
@@ -201,13 +198,3 @@ func (l byModified) Less(i, j int) bool {
 	iModified, jModified := l.Items[i].ModTime, l.Items[j].ModTime
 	return iModified.Sub(jModified) < 0
 }
-
-
-
-
-
-
-
-
-
-
