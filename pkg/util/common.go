@@ -20,6 +20,7 @@ func RandStringRunes(n int) string {
 	return string(b)
 }
 
+
 // 读文件
 func ReadAll(path string) ([]byte, error) {
 	file, err := os.Open(path)

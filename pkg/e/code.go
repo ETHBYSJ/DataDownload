@@ -12,6 +12,7 @@ const (
 
 	// 用户相关
 	CodeLanguageSet = 20001
+	CodeValidateError = 20002
 
 	// 文件相关
 	CodeCreateFolderFailed   = 30001

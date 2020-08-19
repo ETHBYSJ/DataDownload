@@ -19,6 +19,8 @@ func InitRouter() *gin.Engine {
 			user.POST("register", controllers.UserRegister)
 			user.POST("login", controllers.UserLogin)
 			user.GET("logout", controllers.UserLogout)
+			user.POST("validate", controllers.UserValidate)
+			user.POST("request_validate", controllers.UserRequestValidate)
 		}
 		// 需要管理员权限才能访问
 		admin := v1.Group("admin")

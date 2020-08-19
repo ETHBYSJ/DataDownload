@@ -28,6 +28,28 @@ func UserLogin(c *gin.Context) {
 	}
 }
 
+// 用户请求验证
+func UserRequestValidate(c *gin.Context) {
+	var service user.UserRequestValidateService
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.RequestValidate(c)
+		c.JSON(200, res)
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
+// 用户邮箱验证
+func UserValidate(c *gin.Context) {
+	var service user.UserValidateService
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.Validate(c)
+		c.JSON(200, res)
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
 // 用户注册
 func UserRegister(c *gin.Context) {
 	var service user.UserRegisterService

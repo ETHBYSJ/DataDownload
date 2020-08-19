@@ -19,6 +19,9 @@ func (service *UserLoginService) Login(c *gin.Context) serializer.Response {
 	if err != nil {
 		return serializer.Err(e.CodeCheckLogin, "用户邮箱或密码错误", e.ErrLogin)
 	}
+	if !expectedUser.Validate {
+		return serializer.Err(e.CodeNoPermissionErr, "账号未激活", e.ErrUserStatus)
+	}
 	if authOK, _ := expectedUser.CheckPassword(service.Password); !authOK {
 		return serializer.Err(e.CodeCheckLogin, "用户邮箱或密码错误", e.ErrLogin)
 	}

@@ -35,7 +35,7 @@ var (
 	ErrGetUser         = errors.New("获取用户错误")
 	ErrLogin           = errors.New("登录失败")
 	ErrRegister        = errors.New("注册失败")
-	ErrUserStatus      = errors.New("账号被封禁")
+	ErrUserStatus      = errors.New("账号状态错误")
 	ErrLanguageInvalid = errors.New("不支持的语言类型")
 	ErrLanguageSet     = errors.New("语言设置失败")
 )

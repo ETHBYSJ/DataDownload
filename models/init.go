@@ -11,8 +11,12 @@ import (
 
 // 全局变量
 var DB *gorm.DB
+// 全局缓存对象
+var Cache *util.Table
 
 func Init() {
+	util.Log().Info("初始化全局缓存")
+	Cache = util.NewTable()
 	util.Log().Info("初始化数据库连接")
 	var (
 		db  *gorm.DB

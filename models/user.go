@@ -22,6 +22,7 @@ type User struct {
 	Status      bool   `gorm:"type:tinyint(1) not null;default:1"`
 	UserType    string `gorm:"type:varchar(8) not null;default:'User'"`
 	Language    string `gorm:"type:varchar(8) not null;default:'zh-CN'"`
+	Validate 	bool   `gorm:"type:tinyint(1) not null;default:0"`
 }
 
 func NewUser() *User {
@@ -109,6 +110,11 @@ func GetUserByEmail(email string) (*User, error) {
 	var user User
 	result := DB.Set("gorm:auto_preload", true).Where("status = ? and email = ?", 1, email).First(&user)
 	return &user, result.Error
+}
+
+// 设定激活字段
+func (user *User) SetValidate() error {
+	return DB.Model(&user).Update("validate", true).Error
 }
 
 // 设定用户状态
