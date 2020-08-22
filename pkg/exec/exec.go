@@ -7,7 +7,7 @@ import (
 
 func ExecPython(script string, imageDir string, newDir string) error {
 	// _, err := exec.Command("python", "D:\\storage\\medical-image\\example.py", "D:\\storage\\medical-image").Output()
-	_, err := exec.Command("python", script, imageDir, newDir).Output()
+	_, err := exec.Command("python3", script, imageDir, newDir).Output()
 	return err
 }
 

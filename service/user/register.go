@@ -29,7 +29,7 @@ type UserRequestValidateService struct {
 	Email string `form:"email" json:"email" binding:"required"`
 }
 
-func (service *UserRequestValidateService) RequestValidate(c *gin.Context) serializer.Response {
+func (service *UserRequestValidateService) RequestActivate(c *gin.Context) serializer.Response {
 	expectedUser, err := models.GetUserByEmail(service.Email)
 	// 验证
 	if err != nil {
@@ -49,7 +49,7 @@ func (service *UserRequestValidateService) RequestValidate(c *gin.Context) seria
 	}
 }
 
-func (service *UserValidateService) Validate(c *gin.Context) serializer.Response {
+func (service *UserValidateService) Activate(c *gin.Context) serializer.Response {
 	item, _ := models.Cache.Value(service.UserId)
 	if item != nil {
 		code := item.Data().(string)

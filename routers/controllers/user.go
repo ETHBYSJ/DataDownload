@@ -29,10 +29,10 @@ func UserLogin(c *gin.Context) {
 }
 
 // 用户请求验证
-func UserRequestValidate(c *gin.Context) {
+func UserRequestActivate(c *gin.Context) {
 	var service user.UserRequestValidateService
 	if err := c.ShouldBind(&service); err == nil {
-		res := service.RequestValidate(c)
+		res := service.RequestActivate(c)
 		c.JSON(200, res)
 	} else {
 		c.JSON(200, ErrorResponse(err))
@@ -40,10 +40,10 @@ func UserRequestValidate(c *gin.Context) {
 }
 
 // 用户邮箱验证
-func UserValidate(c *gin.Context) {
+func UserActivate(c *gin.Context) {
 	var service user.UserValidateService
 	if err := c.ShouldBind(&service); err == nil {
-		res := service.Validate(c)
+		res := service.Activate(c)
 		c.JSON(200, res)
 	} else {
 		c.JSON(200, ErrorResponse(err))

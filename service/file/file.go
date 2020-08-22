@@ -189,9 +189,9 @@ func (service *DownloadSessionService) CreateDownloadSession(c *gin.Context) ser
 			return
 		}
 		// 获取url
-		downloadURL := filesystem.GlobalFs.GetDownloadURL(randName, service.Path, time.Minute * 2)
+		downloadURL := filesystem.GlobalFs.GetDownloadURL(randName, service.Path, time.Hour * 120)
 		mail.SendMail([]string{service.Email}, "download link", downloadURL)
-		time.AfterFunc(time.Minute * 2, func() {
+		time.AfterFunc(time.Hour * 120, func() {
 			util.Log().Info("删除临时文件")
 			// 删除临时文件
 			filesystem.GlobalFs.Fs.Remove(filepath.Join(service.Path, randName + ".zip"))
