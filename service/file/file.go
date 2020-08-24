@@ -190,7 +190,7 @@ func (service *DownloadSessionService) CreateDownloadSession(c *gin.Context) ser
 		}
 		// 获取url
 		downloadURL := filesystem.GlobalFs.GetDownloadURL(randName, service.Path, time.Minute * 2)
-		mail.SendMail([]string{service.Email}, "download link", downloadURL)
+		mail.SendMail([]string{service.Email}, "数据分享平台数据下载","这是您的下载链接："+ downloadURL+"。\n请在5天内完成下载，如果您未申请下载，请忽略本邮件。\n系统邮件，请勿回复。")
 		time.AfterFunc(time.Minute * 2, func() {
 			util.Log().Info("删除临时文件")
 			// 删除临时文件

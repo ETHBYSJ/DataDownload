@@ -9,10 +9,10 @@ import (
 func SendMail(mailTo []string, subject string, body string) error {
 	//定义邮箱服务器连接信息，如果是阿里邮箱 pass填密码，qq邮箱填授权码
 	mailConn := map[string]string{
-		"user": "2296176046@qq.com",
-		"pass": "fyqrxudndapvdiad",
-		"host": "smtp.qq.com",
-		"port": "465",
+		"user": "imagesharing@163.com",
+		"pass": "DSKJFSZUYCREFRFU",
+		"host": "smtp.163.com",
+		"port": "25",
 	}
 
 	port, _ := strconv.Atoi(mailConn["port"]) //转换端口类型为int

@@ -38,7 +38,7 @@ func (service *UserRequestValidateService) RequestValidate(c *gin.Context) seria
 	// 生成6位随机验证码
 	code := util.RandStringRunes(6)
 	// 发送邮件
-	mail.SendMail([]string{service.Email}, "validate", code)
+	mail.SendMail([]string{service.Email}, "数据分享平台身份验证", "您的验证码是："+code+"。\n如果您并未申请注册，请忽略本邮件。\n系统邮件，请勿回复。")
 	// 在缓存中生存期设置为10分钟
 	models.Cache.Add(expectedUser.ID, time.Minute * 60, code)
 	return serializer.Response{
