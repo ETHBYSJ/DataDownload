@@ -26,6 +26,7 @@ type system struct {
 	StorageRoot   string
 	Script 		  string
 	ImageDir 	  string
+	LabelDir 	  string
 }
 
 var cfg *ini.File

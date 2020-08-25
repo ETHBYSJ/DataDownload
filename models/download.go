@@ -4,7 +4,7 @@ package models
 type DownloadRecord struct {
 	Email string `gorm:"type:varchar(100) not null"`
 	ID string `gorm:"type:varchar(32) not null;unique_index"`
-	// false 未开始 true 已开始
+	// false 未生成链接 true 已生成链接
 	Start bool `gorm:"type:tinyint(1) not null;default:0"`
 }
 

@@ -30,6 +30,7 @@ func addDefaultUser() {
 		defaultUser.Role = "Student"
 		defaultUser.Status = true
 		defaultUser.UserType = "Admin"
+		defaultUser.Validate = true
 		err := defaultUser.SetPassword("123456")
 		if err != nil {
 			util.Log().Panic("设置管理员密码失败, %s", err)

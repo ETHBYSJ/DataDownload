@@ -15,4 +15,5 @@ var SystemConfig = &system{
 	StorageRoot:   "D:\\storage",
 	Script:		   "D:\\storage\\medical-image\\handle.py",
 	ImageDir:	   "D:\\storage\\medical-image\\chest_Xray_test",
+	LabelDir:	   "D:\\storage\\medical-image\\label",
 }

@@ -161,10 +161,14 @@ func (service *DownloadSessionService) CreateDownloadSession(c *gin.Context) ser
 	if err == nil {
 		// 已存在下载记录，返回旧链接
 		go func() {
+			// 还未生成临时文件
+			if !record.Start {
+				mail.SendMail([]string{service.Email}, "数据分享平台数据下载", "您的数据正在处理中，请耐心等待")
+			}
 			base := conf.SystemConfig.Host + conf.SystemConfig.Out
 			uri := fmt.Sprintf("/api/v1/file/download_noauth?id=%s", record.ID)
 			url := base + uri
-			mail.SendMail([]string{service.Email}, "download link", url)
+			mail.SendMail([]string{service.Email}, "数据分享平台数据下载", "这是您的下载链接："+ url+"。\n请在5天内完成下载，如果您未申请下载，请忽略本邮件。\n系统邮件，请勿回复。")
 		}()
 		return serializer.Response{
 			Code: 0,
@@ -173,12 +177,6 @@ func (service *DownloadSessionService) CreateDownloadSession(c *gin.Context) ser
 	// 生成临时文件及数据库记录，并发送给目标用户
 	randName := util.RandStringRunes(16)
 	go func() {
-		// 执行水印算法
-		err := exec.ExecPython(conf.SystemConfig.Script, conf.SystemConfig.ImageDir, randName)
-		if err != nil {
-			util.Log().Error("execute script error, %v", err)
-			return
-		}
 		// 生成数据库记录
 		record := models.NewDownloadRecord()
 		record.Email = service.Email
@@ -188,6 +186,14 @@ func (service *DownloadSessionService) CreateDownloadSession(c *gin.Context) ser
 			util.Log().Error("创建下载记录失败, %v", err)
 			return
 		}
+		// 执行水印算法
+		err := exec.ExecPython(conf.SystemConfig.Script, conf.SystemConfig.ImageDir, randName, conf.SystemConfig.LabelDir, record.Email)
+		if err != nil {
+			util.Log().Error("execute script error, %v", err)
+			return
+		}
+		// 已生成临时文件
+		record.SetStart(true)
 		// 获取url
 		downloadURL := filesystem.GlobalFs.GetDownloadURL(randName, service.Path, time.Hour * 120)
 		mail.SendMail([]string{service.Email}, "数据分享平台数据下载","这是您的下载链接："+ downloadURL+"。\n请在5天内完成下载，如果您未申请下载，请忽略本邮件。\n系统邮件，请勿回复。")
